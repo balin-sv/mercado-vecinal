@@ -39,7 +39,6 @@ app.get("/users", async (req, res) => {
     values: [],
   };
   const result = await client.query(getUsers);
-  console.log(result.rows);
 
   let ojb = {
     data: result.rows,
@@ -123,6 +122,33 @@ app.put("/user/:id/", verifyToken, async (req, res) => {
       }
     }
   });
+});
+
+app.put("/admin/:id/", async (req, res) => {
+  // jwt.verify(req.token, "my_token", async (err, data) => {
+
+  const id = req.params.id;
+  try {
+    const client = await pool.connect();
+    const { is_confirmed } = req.body;
+    console.log("conf", is_confirmed);
+    console.log(id);
+
+    const updateUser = {
+      text: `update skaters set is_confirmed=$1 where id=${id}`,
+      values: [is_confirmed],
+    };
+    const result = await client.query(updateUser);
+    console.log("_____________________");
+
+    console.log(result);
+    res.send(result.rows);
+    client.release(true);
+  } catch (err) {
+    console.log("An error has occurred ", err);
+  }
+
+  // });
 });
 
 app.post("/new-user", async (req, res) => {

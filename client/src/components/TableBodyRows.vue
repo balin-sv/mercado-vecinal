@@ -7,7 +7,11 @@
     <td>{{ user.specialty }}</td>
 
     <td v-if="isAdmin">
-      <input type="checkbox" :checked="user.is_confirmed" />
+      <input
+        @click="test(user.id, !user.is_confirmed)"
+        type="checkbox"
+        :checked="user.is_confirmed"
+      />
     </td>
     <td
       v-if="!isAdmin"
@@ -28,4 +32,11 @@ const props = defineProps({
     type: Boolean,
   },
 });
+
+const test = (id, val) => {
+  console.log(val);
+  emit("update", id, val);
+};
+
+const emit = defineEmits(["update"]);
 </script>

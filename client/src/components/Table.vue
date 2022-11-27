@@ -7,6 +7,7 @@
     </thead>
     <tbody>
       <table-body-rows
+        @update="updateStatus"
         :tableRows="tableRows"
         :isAdmin="isAdmin"
       ></table-body-rows>
@@ -19,7 +20,7 @@ import TableTitle from "@/components/TableTitle.vue";
 import TableBodyRows from "@/components/TableBodyRows.vue";
 import TableHeaderRow from "@/components/TableHeaderRow.vue";
 
-import { ref } from "vue";
+import { onUpdated, ref } from "vue";
 import axios from "axios";
 
 const tableRows = ref([]);
@@ -52,6 +53,25 @@ const getUsers = async () => {
         reject(err);
       });
   });
+};
+const updateStatus = async (id, val) => {
+  // console.log(id);
+  // console.log(userData.value);
+
+  // if (userData.value.password != newPassword.value) {
+  //   return;
+  // }
+  try {
+    const res = await axios.put(
+      `http://localhost:5000/admin/${id}`,
+      {
+        is_confirmed: val,
+      }
+      // { headers: { authToken: authStore.getUserToken() } }
+    );
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 await getUsers();
