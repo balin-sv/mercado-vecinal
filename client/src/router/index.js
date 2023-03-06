@@ -51,11 +51,10 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from) => {
+  console.log("in router");
   const authStore = useAuthStore();
-  const isAdmin = await authStore.getUserRol();
-  const isUser = await authStore.getUser();
-  console.log(isUser.value);
-  console.log(isAdmin);
+  const isUserToken = await authStore.getUserToken();
+  console.log(isUserToken);
 
   // if (!isAdmin && to.name == "admin") {
   //   notif.error("entra con sus credenciales");

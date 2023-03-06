@@ -1,25 +1,13 @@
 <template>
-  <tr v-for="(user, index) in tableRows" :key="index">
+  <tr v-for="(item, index) in tableRows" :key="index">
     <td scope="row">{{ index + 1 }}</td>
-    <td><div></div></td>
-    <td>{{ user.name }}</td>
-    <td>{{ user.experience }}</td>
-    <td>{{ user.specialty }}</td>
-
-    <td v-if="isAdmin">
-      <input
-        @click="test(user.id, !user.is_confirmed)"
-        type="checkbox"
-        :checked="user.is_confirmed"
-      />
-    </td>
-    <td
-      v-if="!isAdmin"
-      class="font-weight-bold"
-      :class="[user.is_confirmed ? 'text-success' : 'text-warning']"
-    >
-      {{ user.is_confirmed ? "aprobado" : "pendiente" }}
-    </td>
+    <td>{{ item.vendedorid }}</td>
+    <td>{{ item.producto }}</td>
+    <td></td>
+    <td>{{ item.stockinicial }}</td>
+    <td>{{ item.stockdisponible }}</td>
+    <td>{{ item.precio }}</td>
+    <td><button type="button" class="btn btn-primary">Editar</button></td>
   </tr>
 </template>
 

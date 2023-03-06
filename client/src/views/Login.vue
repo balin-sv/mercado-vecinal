@@ -60,13 +60,15 @@ const login = async (e) => {
   try {
     authStore.logIn(email.value, password.value).then(async (res) => {
       if (res) {
-        const isAdmin = await authStore.getUserRol();
-        console.log(isAdmin);
-        if (isAdmin) {
-          router.push("/admin");
+        const isUser = await authStore.getUserToken();
+        console.log(isUser);
+        if (isUser) {
+          router.push("/");
         } else {
           router.push("/profile");
         }
+
+        router.push("/");
       } else {
         //temporal
         location.reload();

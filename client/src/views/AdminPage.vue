@@ -1,14 +1,7 @@
 <template>
   <div>
     <TableLayout>
-      <template #page-title>
-        <h1>Admin</h1>
-      </template>
-
-      <Table
-        :isAdmin="true"
-        tableTitle="Lista de Participantes version Admin"
-      />
+      <Table :isAdmin="true" tableTitle="Mis Publicaciones" />
     </TableLayout>
   </div>
 </template>

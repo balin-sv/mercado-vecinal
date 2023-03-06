@@ -1,4 +1,5 @@
 <template>
+  <NavBar></NavBar>
   <Suspense timeout="0" v-if="!error">
     <template #default>
       <component :is="layout">
@@ -10,7 +11,6 @@
     </template>
   </Suspense>
   <div v-else><Error /></div>
-  <NavBar></NavBar>
 </template>
 
 <script setup>
