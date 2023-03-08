@@ -1,66 +1,99 @@
-<!-- <h1><RouterLink to="/">Skate Park</RouterLink></h1>
-
-  <div class="py-4">
-    <h2>Registro</h2>
-    <hr class="w-50" />
-
-    <form>
-      <div class="form-group row w-50 m-auto">
-        <div class="form-group col-12 col-sm-6">
-          <label>Email</label>
-          <input v-model="email" class="form-control m-auto" />
-        </div>
-        <div class="form-group col-12 col-sm-6">
-          <label>Nombre</label>
-          <input v-model="nombre" class="form-control m-auto" />
-        </div>
-        <div class="form-group col-12 col-sm-6">
-          <label>Password</label>
-          <input v-model="password" class="form-control m-auto" />
-        </div>
-        <div class="form-group col-12 col-sm-6">
-          <label>Repita la password</label>
-          <input v-model="newPassword" class="form-control m-auto" />
-        </div>
-        <div class="form-group col-12 col-sm-6">
-          <label>Años de experiencia</label>
-          <input v-model="anos_experiencia" class="form-control m-auto" />
-        </div>
-        <div class="form-group col-12 col-sm-6">
-          <label>Especialidad</label>
-          <input v-model="especialidad" class="form-control m-auto" />
-        </div>
-        <div class="form-group col-12 col-sm-12">
-          <label>Foto de perfil</label>
-          <input type="file" />
-        </div>
-      </div>
-      <button
-        @click="
-          (e) => {
-            e.preventDefault();
-            createAccount();
-          }
-        "
-        class="btn btn-info mb-3"
-      >
-        Registrarme
-      </button>
-      <p><RouterLink to="/login">Iniciar Sesión</RouterLink></p>
-    </form>
-  </div> -->
-
 <template>
-  <div>
-    <FormLayout>
-      <template #page-title>
-        <h1>Register</h1>
-      </template>
-      <Form :isAuthRequired="false" formTitle="Registrarse en la lista" />
-    </FormLayout>
-  </div>
+  <Form
+    :isAuthRequired="false"
+    formTitle="Registrarse"
+    :formModel="registerFormModel"
+    @submit="createAccount"
+  />
+  <p class="mt-5">
+    ¿Tienes cuenta?
+    <RouterLink to="/login">Login</RouterLink>
+  </p>
 </template>
 <script setup>
+import { RouterLink } from "vue-router";
+import { useRoute } from "vue-router";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth-store.js";
 import Form from "@/components/Form.vue";
-import FormLayout from "@/layouts/FormLayout.vue";
+import axios from "axios";
+
+import { ref } from "vue";
+const router = useRouter();
+const authStore = useAuthStore();
+
+const registerFormModel = ref({
+  nombre: {
+    tag: "input",
+    type: "text",
+    placeholder: "Ingrese su nombre",
+    label: "Nombre",
+    value: null,
+    rules: {
+      pattern: {
+        value: /.*\S.*/,
+        message: "No puede estar vacío",
+      },
+    },
+    errorMsg: null,
+    isPayload: true,
+  },
+  email: {
+    tag: "input",
+    type: "email",
+    placeholder: "Ingrese su email",
+    label: "Email",
+    value: null,
+    rules: {
+      pattern: {
+        value: /^[a-z0-9.]{1,64}@[a-z0-9.]{1,64}$/i,
+        message: "Ingrese un email válido",
+      },
+    },
+    errorMsg: null,
+    isPayload: true,
+  },
+  password: {
+    tag: "input",
+    type: "password",
+    placeholder: "Ingrese su contraseña",
+    label: "Password",
+    value: null,
+    rules: {
+      pattern: {
+        value: /^[a-zA-Z0-9]{3,10}$/,
+        message: "Ingrese una contraseña válida",
+      },
+    },
+    errorMsg: null,
+    isPayload: true,
+  },
+  password_repeat: {
+    tag: "input",
+    type: "password",
+    placeholder: "Repite su contraseña",
+    label: "Pepite su contraseña",
+    value: null,
+    rules: null,
+    errorMsg: null,
+    isPayload: false,
+  },
+});
+
+const createAccount = async (payload) => {
+  try {
+    const { data } = await axios.post(
+      `http://localhost:5000/new-user`,
+      payload
+    );
+    const loginPayload = {
+      email: payload.email,
+      password: payload.password,
+    };
+    authStore.logIn(loginPayload);
+    router.push("/");
+  } catch (e) {
+    console.log(e);
+  }
+};
 </script>

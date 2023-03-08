@@ -1,64 +1,62 @@
 <template>
-  <div>
-    <DefaultLayout>
-      <h1><RouterLink to="/">Skate Park</RouterLink></h1>
-
-      <div class="py-5">
-        <h2>Iniciar Sesión</h2>
-        <hr class="w-50" />
-
-        <form @submit="login">
-          <div class="form-group">
-            <div class="form-group">
-              <label>Email</label>
-              <input
-                @change="
-                  (e) => {
-                    email = e.target.value;
-                  }
-                "
-                class="form-control w-50 m-auto"
-              />
-            </div>
-            <div class="form-group">
-              <label>Password</label>
-              <input
-                @change="
-                  (e) => {
-                    password = e.target.value;
-                  }
-                "
-                class="form-control w-50 m-auto"
-              />
-            </div>
-          </div>
-          <button class="btn btn-success mb-3">Ingresar</button>
-          <p>
-            ¿Aún no tienes cuenta?
-            <RouterLink to="/register">Registrarme</RouterLink>
-          </p>
-        </form>
-      </div>
-    </DefaultLayout>
-  </div>
+  <Form
+    :isAuthRequired="false"
+    formTitle="Login"
+    :formModel="loginFormModel"
+    @submit="login"
+  />
+  <p class="mt-5">
+    ¿Aún no tienes cuenta?
+    <RouterLink to="/register">Registrarme</RouterLink>
+  </p>
 </template>
 <script setup>
 import { RouterLink } from "vue-router";
 import { useRoute } from "vue-router";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth-store.js";
-import DefaultLayout from "@/layouts/DefaultLayout.vue";
+import Form from "@/components/Form.vue";
 
 import { ref } from "vue";
 const router = useRouter();
 const authStore = useAuthStore();
-const email = ref("");
-const password = ref("");
 
-const login = async (e) => {
-  e.preventDefault();
+const loginFormModel = ref({
+  email: {
+    tag: "input",
+    type: "email",
+    placeholder: "Ingrese su email",
+    label: "Email",
+    value: null,
+    rules: {
+      pattern: {
+        value: /^[a-z0-9.]{1,64}@[a-z0-9.]{1,64}$/i,
+        message: "Ingrese un email válido",
+      },
+    },
+    errorMsg: null,
+    isPayload: true,
+  },
+  password: {
+    tag: "input",
+    type: "password",
+    placeholder: "Ingrese su contraseña",
+    label: "Password",
+    value: null,
+    rules: {
+      pattern: {
+        value: /^[a-zA-Z0-9]{3,10}$/,
+        message: "Ingrese una contraseña válida",
+      },
+    },
+    errorMsg: null,
+    isPayload: true,
+  },
+});
+
+const login = async (payload) => {
   try {
-    authStore.logIn(email.value, password.value).then(async (res) => {
+    authStore.logIn(payload).then(async (res) => {
       if (res) {
         const isUser = await authStore.getUserToken();
         console.log(isUser);

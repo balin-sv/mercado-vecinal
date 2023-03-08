@@ -146,6 +146,27 @@ app.post("/new-item", verifyToken, async (req, res) => {
   }
 });
 
+app.post("/new-user", async (req, res) => {
+  const { email, nombre, password } = req.body;
+  console.log(email, nombre, password);
+  try {
+    const checkMSG = await checkEmail(email);
+    if (checkMSG === "ok") {
+      const client = await pool.connect();
+      const result = await client.query(
+        "INSERT into usuarios (email, nombre, password) VALUES($1, $2, $3)",
+        [email, nombre, password]
+      );
+      res.send(result.rows);
+      client.release(true);
+    } else {
+      res.status(401).send([]);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 app.put("/logout", verifyToken, function (req, res) {
   const token = req.headers["authtoken"];
   jwt.sign(token, "", { expiresIn: 1 }, (logout, err) => {
@@ -166,6 +187,30 @@ function verifyToken(req, res, next) {
     if (err) return res.sendStatus(404);
     req.user = user;
     next();
+  });
+}
+async function checkEmail(email) {
+  return new Promise(async (resolve, reject) => {
+    const client = await pool.connect();
+    const checkEmail = {
+      text: "select 1 from usuarios where email = $1",
+      values: [email],
+    };
+    client
+      .query(checkEmail)
+      .then((res) => {
+        if (res.rowCount > 0) {
+          resolve("email ya existe");
+        } else {
+          resolve("ok");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        client.release();
+      });
   });
 }
 
