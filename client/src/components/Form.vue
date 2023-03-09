@@ -1,13 +1,20 @@
 <template>
   <hr class="w-50" />
-  <form>
+  <form enctype="multipart/form-data">
     <div class="form-group row w-50 m-auto">
       <div
         v-for="(field, name, i) in formData"
-        class="form-group col-12 col-sm-6"
+        :class="[
+          'form-group col-12 ',
+          i == Object.keys(formData).length - 1 &&
+          Object.keys(formData).length % 2 !== 0
+            ? 'col-md-12'
+            : 'col-md-6',
+        ]"
       >
-        <label>{{ field.label }}</label>
+        <label :key="i">{{ field.label }}</label>
         <component
+          :key="i"
           :is="field.tag"
           :type="field.type"
           :value="field.value"
@@ -15,6 +22,8 @@
           :placeholder="field.placeholder"
           :min="field.min"
           :max="field.max"
+          :name="field.name"
+          :id="field.name"
           rows="5"
           :class="[
             'form-control m-auto',
@@ -50,7 +59,7 @@
 import { useAuthStore } from "@/stores/auth-store.js";
 import { useRouter } from "vue-router";
 import { ref, onMounted, computed, watch } from "vue";
-
+import axios from "axios";
 
 const props = defineProps({
   isAuthRequired: {
@@ -79,7 +88,9 @@ watch(
       } else if (
         newVal[key].value &&
         key !== "password_repeat" &&
-        newVal[key].type !== "number"
+        newVal[key].type !== "number" &&
+        newVal.rules !== null &&
+        newVal[key].type !== "file"
       ) {
         !newVal[key].rules.pattern.value.test(newVal[key].value)
           ? (formData.value[key].errorMsg =
@@ -97,6 +108,12 @@ watch(
         newVal[key].value > newVal[key].max
           ? (formData.value[key].value = newVal[key].max)
           : null;
+      } else if (newVal[key].type == "file") {
+        !newVal[key].rules.pattern.value.test(newVal[key].value) ||
+        document.querySelector("#foto").files[0].size > 400000
+          ? (formData.value[key].errorMsg =
+              formData.value[key].rules.pattern.message)
+          : (formData.value[key].errorMsg = null);
       } else {
         formData.value[key].errorMsg = null;
       }
@@ -123,16 +140,23 @@ const isFormChecked = computed(() => {
 
 const createAccount = async () => {
   const payload = {};
-
   for (const key in formData.value) {
     formData.value[key].isPayload
       ? (payload[key] = formData.value[key].value)
       : null;
-    console.log(payload);
   }
-  console.log(payload);
 
-  emit("submit", payload);
+  if (document.querySelector("#foto")) {
+    const pic = new FormData();
+    pic.append("foto", document.querySelector("#foto").files[0]);
+    //  const r =  document.querySelector("#foto").files[0]
+    const newPayload = { ...payload, foto: pic.get("foto") };
+
+    emit("submit", newPayload);
+  } else {
+    emit("submit", payload);
+  }
+
   // const id = authStore.getUser().userid;
   // try {
   //   const { data } = await axios.post(`http://localhost:5000/new-item`, {
@@ -145,6 +169,18 @@ const createAccount = async () => {
   //     precio: formData.value.precio,
   //   });
   //   router.push("/");
+  // } catch (e) {
+  //   console.log(e);
+  // }
+};
+
+const upload = async () => {
+  const formData = new FormData();
+  formData.append("foto", document.querySelector("#foto").files[0]);
+  console.log(document.querySelector("#foto").files[0]);
+  // try {
+  //   const { data } = await axios.post(`http://localhost:5000/upload`, formData);
+  //   console.log(data);
   // } catch (e) {
   //   console.log(e);
   // }

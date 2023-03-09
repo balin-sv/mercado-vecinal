@@ -42,23 +42,6 @@ export const useAuthStore = defineStore("auth", {
         this.user = {};
         this.userToken = "";
         resolve(true);
-        // axios
-        //   .post("http://localhost:5000/logout", {
-        //     headers: { authToken: this.userToken },
-        //   })
-        //   .then((result) => {
-        //     if (result) {
-        //       this.user = {};
-        //       this.userToken = "";
-        //       resolve(true);
-        //     } else {
-        //       resolve(false);
-        //     }
-        //   })
-        //   .catch((error) => {
-        //     resolve(false);
-        //     reject(error);
-        //   });
       });
     },
   },

@@ -1,8 +1,11 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
-const app = express();
 const { Pool } = require("pg");
 var bodyParser = require("body-parser");
+const fileUpload = require("express-fileupload");
+var app = express();
+
+// default options
 
 const cors = require("cors");
 
@@ -13,8 +16,11 @@ app.use(
     origin: "*",
   })
 );
+app.use("/public/images", express.static(__dirname + "/public/images"));
 
+app.use(fileUpload());
 app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(bodyParser.json());
 
 const config = {
@@ -73,7 +79,7 @@ app.post("/user-publicaciones", verifyToken, async (req, res) => {
       stockInicial: "stockInicial",
       stockDisponible: "stockDisponible",
       precio: "precio",
-      editar: "editar",
+      acciones: "acciones",
     },
   };
 
@@ -105,26 +111,22 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.post("/new-item", verifyToken, async (req, res) => {
+app.post("/new-item", async (req, res) => {
   const {
     vendedorid,
     producto,
-    foto,
     descripcion,
     stockinicial,
     stockdisponible,
     precio,
   } = req.body;
 
-  console.log(
-    vendedorid,
-    producto,
-    foto,
-    descripcion,
-    stockinicial,
-    stockdisponible,
-    precio
-  );
+  const file = req.files.foto;
+
+  const img_name = file.name;
+  file.mv("public/images/" + file.name, function (err) {
+    if (err) return res.status(500).send(err);
+  });
   try {
     const client = await pool.connect();
     const result = await client.query(
@@ -132,7 +134,7 @@ app.post("/new-item", verifyToken, async (req, res) => {
       [
         vendedorid,
         producto,
-        foto,
+        img_name,
         descripcion,
         stockinicial,
         stockdisponible,
@@ -178,6 +180,23 @@ app.put("/logout", verifyToken, function (req, res) {
   });
 });
 
+app.delete("/delete-publicacion/:id", verifyToken, async (req, res) => {
+  const { id } = req.params;
+  console.log(id);
+  try {
+    const client = await pool.connect();
+    const deleteUser = {
+      text: "delete from publicaciones where publicacionid =$1",
+      values: [id],
+    };
+    const result = await client.query(deleteUser);
+    res.send(result.rows);
+    client.release(true);
+  } catch (err) {
+    console.log("An error has occurred ", err);
+  }
+});
+
 function verifyToken(req, res, next) {
   console.log("verifyToken");
   const token = req.headers["authtoken"];
@@ -186,6 +205,7 @@ function verifyToken(req, res, next) {
   jwt.verify(token, "my_token", (err, user) => {
     if (err) return res.sendStatus(404);
     req.user = user;
+    console.log("GOOD");
     next();
   });
 }
