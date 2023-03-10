@@ -52,10 +52,11 @@
           >Mis Compras</RouterLink
         >
       </ul>
-      <div class="test" v-if="isAdmin">
-        <div class="cart">0</div>
+      <RouterLink class="test" v-if="isAdmin" to="/cart">
+        <div class="cart">{{ itemsInCart }}</div>
         <font-awesome-icon size="2xl" icon="fa-solid fa-cart-arrow-down" />
-      </div>
+      </RouterLink>
+
       <button
         v-if="isAdmin"
         type="button"
@@ -73,6 +74,7 @@ import { RouterLink } from "vue-router";
 import { useAuthStore } from "@/stores/auth-store.js";
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
+import { useCartStore } from "@/stores/cart-store.js";
 /* add fontawesome core */
 import { library } from "@fortawesome/fontawesome-svg-core";
 
@@ -80,11 +82,19 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCartArrowDown } from "@fortawesome/free-solid-svg-icons";
 
 library.add(faCartArrowDown);
-
+const cartStore = useCartStore();
 const authStore = useAuthStore();
 const router = useRouter();
 const isAdmin = computed(() => {
   return authStore.getUserToken();
+});
+
+const itemsInCart = computed(() => {
+  const arr = cartStore.getCart();
+
+  return arr.reduce((acc, item) => {
+    return acc + item.value;
+  }, 0);
 });
 
 const logout = async (e) => {

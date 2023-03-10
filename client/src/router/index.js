@@ -47,6 +47,14 @@ const router = createRouter({
         layout: "TableLayout",
       },
     },
+    {
+      path: "/cart",
+      name: "cart",
+      component: () => import("../views/CartPage.vue"),
+      meta: {
+        layout: "TableLayout",
+      },
+    },
   ],
 });
 

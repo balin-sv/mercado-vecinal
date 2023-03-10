@@ -74,13 +74,14 @@ const props = defineProps({
 });
 
 const list = computed(() => {
+  const cartList = itemsList.value.filter((item) => item.value > 0);
+  cartStore.setCartList(cartList);
   return itemsList.value;
 });
 
 const addItem = (id) => {
   console.log(id);
   console.log(list.value);
-
   const item = itemsList.value.find((item) => item.publicacionid === id);
   if (item.value < item.stockdisponible) {
     item.value++;
