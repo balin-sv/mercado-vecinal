@@ -12,11 +12,17 @@
         style="width: 100%; height: 50px; object-fit: contain"
       />
       <span v-if="header.value === 'acciones'">
-        <button type="button" class="btn btn-success mr-3">Editar</button>
+        <button
+          @click="emit('clickHandler', item, 'edit')"
+          type="button"
+          class="btn btn-success mr-3"
+        >
+          Editar
+        </button>
         <button
           type="button"
           class="btn btn-danger"
-          @click="test(item.publicacionid)"
+          @click="emit('clickHandler', item, 'delete')"
         >
           Eliminar
         </button>
@@ -25,7 +31,7 @@
         v-if="header.value === 'delete'"
         type="button"
         class="btn btn-danger"
-        @click="deleteItemFromCart(item.publicacionid)"
+        @click="emit('clickHandler', item)"
       >
         Eliminar
       </button>
@@ -63,25 +69,8 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["update", "agentUpdate"]);
+const emit = defineEmits(["clickHandler"]);
 console.log(props.tableRows);
-
-const test = async (id) => {
-  console.log(id);
-  try {
-    const { data } = await axios.delete(
-      `http://localhost:5000/delete-publicacion/${id}`,
-      { headers: { authToken: authStore.getUserToken() } }
-    );
-    location.reload();
-  } catch (e) {
-    console.log(e);
-  }
-};
-
-const deleteItemFromCart = async (id) => {
-  emit("agentUpdate", id);
-};
 
 watch(
   () => props.tableRows,

@@ -6,11 +6,10 @@
     </thead>
     <tbody>
       <table-body-rows
-        @update="updateStatus"
         :tableRows="tableRows"
         :tableHeaders="tableHeaders"
         :isAdmin="isAdmin"
-        @agentUpdate="agentUpdate"
+        @passID="passID"
       ></table-body-rows>
     </tbody>
   </table>
@@ -82,16 +81,6 @@ const total = computed(() => {
 //       });
 //   });
 // };
-
-const updateStatus = async (id, val) => {
-  try {
-    const res = await axios.put(`http://localhost:5000/admin/${id}`, {
-      is_confirmed: val,
-    });
-  } catch (e) {
-    console.log(e);
-  }
-};
 
 const agentUpdate = async (id) => {
   emit("updateCart", id);

@@ -57,8 +57,23 @@ app.get("/publicaciones", async (req, res) => {
   };
 
   res.send(ojb);
-
   client.release(true);
+});
+
+app.get("/publicaciones/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const client = await pool.connect();
+    const getItem = {
+      text: "select * from publicaciones where publicacionid =$1",
+      values: [id],
+    };
+    const result = await client.query(getItem);
+    res.send(result.rows);
+    client.release(true);
+  } catch (err) {
+    console.log("An error has occurred ", err);
+  }
 });
 
 app.post("/user-publicaciones", verifyToken, async (req, res) => {
@@ -190,6 +205,23 @@ app.delete("/delete-publicacion/:id", verifyToken, async (req, res) => {
       values: [id],
     };
     const result = await client.query(deleteUser);
+    res.send(result.rows);
+    client.release(true);
+  } catch (err) {
+    console.log("An error has occurred ", err);
+  }
+});
+
+app.put("/update-publicacion/:id", verifyToken, async (req, res) => {
+  const { id } = req.params;
+  const { producto, descripcion, stockinicial, precio } = req.body;
+  try {
+    const client = await pool.connect();
+    const updateItem = {
+      text: "UPDATE publicaciones SET producto = $2, descripcion = $3, stockinicial = $4, precio = $5 where publicacionid =$1",
+      values: [id, producto, descripcion, stockinicial, precio],
+    };
+    const result = await client.query(updateItem);
     res.send(result.rows);
     client.release(true);
   } catch (err) {

@@ -1,5 +1,4 @@
 <template>
-  <hr class="w-50" />
   <form enctype="multipart/form-data">
     <div class="form-group row w-50 m-auto">
       <div
@@ -37,7 +36,7 @@
         <small class="text-danger">{{ field.errorMsg }}</small>
       </div>
     </div>
-    <div class="mb-1 mt-5">
+    <div v-if="!context" class="mb-1 mt-5">
       <button
         @click="
           (e) => {
@@ -62,10 +61,6 @@ import { ref, onMounted, computed, watch } from "vue";
 import axios from "axios";
 
 const props = defineProps({
-  isAuthRequired: {
-    type: Boolean,
-    required: true,
-  },
   formTitle: {
     type: String,
     required: true,
@@ -73,6 +68,10 @@ const props = defineProps({
   formModel: {
     type: Object,
     required: true,
+  },
+  context: {
+    type: String,
+    required: false,
   },
 });
 const emit = defineEmits(["submit"]);
@@ -156,33 +155,7 @@ const createAccount = async () => {
   } else {
     emit("submit", payload);
   }
-
-  // const id = authStore.getUser().userid;
-  // try {
-  //   const { data } = await axios.post(`http://localhost:5000/new-item`, {
-  //     vendedorid: id,
-  //     producto: formData.value.producto,
-  //     foto: null,
-  //     descripcion: formData.value.descripcion,
-  //     stockinicial: formData.value.stockInicial,
-  //     stockdisponible: formData.value.stockInicial,
-  //     precio: formData.value.precio,
-  //   });
-  //   router.push("/");
-  // } catch (e) {
-  //   console.log(e);
-  // }
 };
 
-const upload = async () => {
-  const formData = new FormData();
-  formData.append("foto", document.querySelector("#foto").files[0]);
-  console.log(document.querySelector("#foto").files[0]);
-  // try {
-  //   const { data } = await axios.post(`http://localhost:5000/upload`, formData);
-  //   console.log(data);
-  // } catch (e) {
-  //   console.log(e);
-  // }
-};
+
 </script>
