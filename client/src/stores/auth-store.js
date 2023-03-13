@@ -17,13 +17,10 @@ export const useAuthStore = defineStore("auth", {
     getUser() {
       return this.user;
     },
-    logIn(email, password) {
+    logIn(payload) {
       return new Promise((resolve, reject) => {
         axios
-          .post("http://localhost:5000/login", {
-            email,
-            password,
-          })
+          .post("http://localhost:5000/login", payload)
           .then((result) => {
             if (result) {
               console.log(result.data);
@@ -45,23 +42,6 @@ export const useAuthStore = defineStore("auth", {
         this.user = {};
         this.userToken = "";
         resolve(true);
-        // axios
-        //   .post("http://localhost:5000/logout", {
-        //     headers: { authToken: this.userToken },
-        //   })
-        //   .then((result) => {
-        //     if (result) {
-        //       this.user = {};
-        //       this.userToken = "";
-        //       resolve(true);
-        //     } else {
-        //       resolve(false);
-        //     }
-        //   })
-        //   .catch((error) => {
-        //     resolve(false);
-        //     reject(error);
-        //   });
       });
     },
   },

@@ -23,6 +23,11 @@ import Error from "@/views/Error.vue";
 
 import { ref, onErrorCaptured } from "vue";
 
+
+
+
+
+
 const error = ref(null);
 
 onErrorCaptured((err) => {
