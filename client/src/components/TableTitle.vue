@@ -1,5 +1,5 @@
 <template>
-  <h2>{{ tableTitle }}</h2>
+  <h2><slot></slot></h2>
 </template>
 <script setup>
 const props = defineProps({ tableTitle: { type: String } });

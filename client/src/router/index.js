@@ -20,7 +20,7 @@ const router = createRouter({
       name: "login",
       component: () => import("../views/Login.vue"),
       meta: {
-        layout: "DefaultLayout",
+        layout: "FormLayout",
       },
     },
     {
@@ -43,6 +43,14 @@ const router = createRouter({
       path: "/admin",
       name: "admin",
       component: () => import("../views/AdminPage.vue"),
+      meta: {
+        layout: "TableLayout",
+      },
+    },
+    {
+      path: "/cart",
+      name: "cart",
+      component: () => import("../views/CartPage.vue"),
       meta: {
         layout: "TableLayout",
       },
