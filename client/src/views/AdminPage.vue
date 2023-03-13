@@ -1,36 +1,41 @@
 <template>
-  <div>
-    <table-title>Admin Page</table-title>
-    <table class="table container">
-      <thead>
-        <table-header-row :tableHeaders="tableHeaders"> </table-header-row>
-      </thead>
-      <tbody>
-        <table-body-rows
-          :tableRows="tableRows"
-          :tableHeaders="tableHeaders"
-          @clickHandler="clickHandler"
-        ></table-body-rows>
-      </tbody>
-    </table>
-    <Modal>
-      <Form
-        v-if="modalContext == 'edit'"
-        :formModel="modalFormModel"
-        :context="modalContext"
-        formTitle="Registrarse"
-      />
-      <p v-else>{{ deleteText }}</p>
-      <template v-slot:btn>
-        <button-custom buttonStyle="btn-success" @click="defineAction">{{
-          modalContext == "delete" ? "Eliminar" : "Guaradr Cambios"
-        }}</button-custom>
-        <button-custom buttonStyle="btn-danger" data-dismiss="modal"
-          >Cancelar</button-custom
-        >
-      </template>
-    </Modal>
-  </div>
+  <h2>Administrar Publicaciones</h2>
+  <Table>
+    <template v-slot:thead>
+      <table-header-row :tableHeaders="tableHeaders"> </table-header-row>
+    </template>
+    <table-body-rows
+      :tableRows="tableRows"
+      :tableHeaders="tableHeaders"
+      @clickHandler="clickHandler"
+    ></table-body-rows>
+  </Table>
+  <Modal :context="modalContext">
+    <template v-slot:title>
+      <span>{{
+        modalContext === "edit" ? "Editar publicacion" : "Confirma la accion"
+      }}</span>
+    </template>
+    <Form
+      v-if="modalContext == 'edit'"
+      :formModel="modalFormModel"
+      :context="modalContext"
+      formTitle="Registrarse"
+    />
+    <div v-else>
+      <font-awesome-icon size="2xl" icon="fa-solid fa-circle-exclamation" />
+      <p class="mt-3">{{ deleteText }}</p>
+    </div>
+
+    <template v-slot:btn>
+      <button-custom buttonStyle="btn-success" @click="defineAction">{{
+        modalContext == "delete" ? "Eliminar" : "Guaradr Cambios"
+      }}</button-custom>
+      <button-custom buttonStyle="btn-danger" data-dismiss="modal"
+        >Cancelar</button-custom
+      >
+    </template>
+  </Modal>
 </template>
 
 <script setup>
@@ -38,11 +43,18 @@ import { ref } from "vue";
 import { useAuthStore } from "@/stores/auth-store.js";
 import axios from "axios";
 import Modal from "@/components/Modal.vue";
-import TableTitle from "@/components/TableTitle.vue";
+import Table from "@/components/Table.vue";
 import TableBodyRows from "@/components/TableBodyRows.vue";
 import TableHeaderRow from "@/components/TableHeaderRow.vue";
 import ButtonCustom from "@/components/ButtonCustom.vue";
 import Form from "@/components/Form.vue";
+/* add fontawesome core */
+import { library } from "@fortawesome/fontawesome-svg-core";
+
+/* add some free styles */
+import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+
+library.add(faCircleExclamation);
 
 const tableRows = ref();
 const authStore = useAuthStore();
@@ -200,7 +212,7 @@ const getPublications = async () => {
 };
 
 const openDeleteModal = async (itemName) => {
-  deleteText.value = "Desea eliminar el producto: " + itemName;
+  deleteText.value = "Desea eliminar el producto " + itemName + "?";
   $("#modal").modal();
 };
 

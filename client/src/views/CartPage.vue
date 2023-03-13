@@ -1,30 +1,15 @@
 <template>
-  <div>
-    <table-title>Cart Page</table-title>
-    <table class="table container">
-      <thead>
-        <table-header-row :tableHeaders="tableHeaders"> </table-header-row>
-      </thead>
-      <tbody>
-        <table-body-rows
-          :tableRows="tableRows"
-          :tableHeaders="tableHeaders"
-          @clickHandler="openDeleteModal"
-        ></table-body-rows>
-      </tbody>
-    </table>
-    <Modal>
-      <p>{{ deleteText }}</p>
-      <template v-slot:btn>
-        <button-custom buttonStyle="btn-success" @click="updateCart">
-          Eliminar
-        </button-custom>
-        <button-custom buttonStyle="btn-danger" data-dismiss="modal"
-          >Cancelar</button-custom
-        >
-      </template>
-    </Modal>
-  </div>
+  <h2>Carrito de Compras</h2>
+  <Table>
+    <template v-slot:thead>
+      <table-header-row :tableHeaders="tableHeaders"> </table-header-row>
+    </template>
+    <table-body-rows
+      :tableRows="tableRows"
+      :tableHeaders="tableHeaders"
+      @clickHandler="openDeleteModal"
+    ></table-body-rows>
+  </Table>
   <hr v-if="total" class="container" />
   <div
     v-if="total"
@@ -33,6 +18,21 @@
     <h3>Total:</h3>
     <h5>{{ total }}</h5>
   </div>
+  <Modal>
+    <template v-slot:title>
+      <span> Confirma la accion </span>
+    </template>
+    <p>{{ deleteText }}</p>
+    <font-awesome-icon size="2xl" icon="fa-solid fa-circle-exclamation" />
+    <template v-slot:btn>
+      <button-custom buttonStyle="btn-success" @click="updateCart">
+        Eliminar
+      </button-custom>
+      <button-custom buttonStyle="btn-danger" data-dismiss="modal"
+        >Cancelar</button-custom
+      >
+    </template>
+  </Modal>
 </template>
 
 <script setup>
@@ -40,10 +40,17 @@ import { ref, computed } from "vue";
 import { useCartStore } from "@/stores/cart-store.js";
 import { onBeforeMount } from "vue";
 import Modal from "@/components/Modal.vue";
-import TableTitle from "@/components/TableTitle.vue";
+import Table from "@/components/Table.vue";
 import TableBodyRows from "@/components/TableBodyRows.vue";
 import TableHeaderRow from "@/components/TableHeaderRow.vue";
 import ButtonCustom from "@/components/ButtonCustom.vue";
+/* add fontawesome core */
+import { library } from "@fortawesome/fontawesome-svg-core";
+
+/* add some free styles */
+import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+
+library.add(faCircleExclamation);
 
 const tableRows = ref();
 const cartStore = useCartStore();
@@ -83,8 +90,7 @@ const updateCart = async () => {
 
 const openDeleteModal = async (item) => {
   itemToDelete.value = item;
-  deleteText.value = "Desea eliminar el producto: " + item.producto;
+  deleteText.value = "Desea eliminar el producto " + item.producto + "?";
   $("#modal").modal();
 };
-const defineAction = () => {};
 </script>

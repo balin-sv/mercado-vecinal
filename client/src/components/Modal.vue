@@ -8,10 +8,17 @@
     aria-labelledby="staticBackdropLabel"
     aria-hidden="true"
   >
-    <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div
+      :class="[
+        'modal-dialog  modal-dialog-centered',
+        context === 'edit' ? 'modal-xl' : '',
+      ]"
+    >
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+          <h5 class="modal-title" id="staticBackdropLabel">
+            <slot name="title"></slot>
+          </h5>
           <button
             type="button"
             class="close"
@@ -22,35 +29,19 @@
           </button>
         </div>
         <div class="modal-body">
-          <!-- <Form
-            :isAuthRequired="false"
-            formTitle="Registrarse"
-            :formModel="formModel"
-          /> -->
           <slot></slot>
         </div>
         <div class="modal-footer">
           <slot name="btn"></slot>
-          <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">
-            Close
-          </button>
-          <button type="button" class="btn btn-primary">Understood</button> -->
         </div>
       </div>
     </div>
   </div>
 </template>
 <script setup>
-import Form from "@/components/Form.vue";
 const props = defineProps({
-  isAuthRequired: {
-    type: Boolean,
-  },
-  formTitle: {
+  context: {
     type: String,
-  },
-  formModel: {
-    type: Object,
   },
 });
 </script>
