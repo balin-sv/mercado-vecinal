@@ -1,5 +1,5 @@
 <template>
-  <form enctype="multipart/form-data">
+  <form enctype="multipart/form-data" class="mt-5">
     <div class="form-group row w-50 m-auto">
       <div
         v-for="(field, name, i) in formData"
@@ -156,6 +156,4 @@ const createAccount = async () => {
     emit("submit", payload);
   }
 };
-
-
 </script>

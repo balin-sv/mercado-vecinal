@@ -163,6 +163,43 @@ app.post("/new-item", async (req, res) => {
   }
 });
 
+app.post("/new-reserve", async (req, res) => {
+  const {
+    compradorid,
+    vendedorid,
+    publicacionid,
+    cantidad,
+    valorTotal,
+    fechaReserva,
+  } = req.body;
+
+  const file = req.files.foto;
+
+  const img_name = file.name;
+  file.mv("public/images/" + file.name, function (err) {
+    if (err) return res.status(500).send(err);
+  });
+  try {
+    const client = await pool.connect();
+    const result = await client.query(
+      "INSERT into publicaciones (vendedorid, producto, foto,descripcion,stockinicial,stockdisponible,precio) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING publicacionid",
+      [
+        vendedorid,
+        producto,
+        img_name,
+        descripcion,
+        stockinicial,
+        stockdisponible,
+        precio,
+      ]
+    );
+    res.send(result.rows);
+    client.release(true);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 app.post("/new-user", async (req, res) => {
   const { email, nombre, password } = req.body;
   console.log(email, nombre, password);

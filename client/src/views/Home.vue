@@ -27,7 +27,7 @@
               {{ item.descripcion }}
             </p>
             <div className="d-flex flex-row justify-content-between ">
-              <div className="btn-box d-flex flex-nowrap">
+              <div className="d-flex flex-nowrap">
                 <button
                   className="btn-count btn btn-secondary"
                   @click="addItem(item.publicacionid)"
@@ -47,7 +47,12 @@
                   -
                 </button>
               </div>
-              <a href="#" class="btn btn-success ml-2">Reservar</a>
+              <RouterLink
+                v-if="item.value > 0"
+                class="btn btn-success ml-2"
+                to="/cart"
+                >Reservar
+              </RouterLink>
             </div>
           </div>
         </div>

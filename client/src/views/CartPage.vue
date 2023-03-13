@@ -5,19 +5,31 @@
       <table-header-row :tableHeaders="tableHeaders"> </table-header-row>
     </template>
     <table-body-rows
-      :tableRows="tableRows"
+      v-for="vendedor in tableRows"
+      :tableRows="vendedor.data"
       :tableHeaders="tableHeaders"
       @clickHandler="openDeleteModal"
-    ></table-body-rows>
+    >
+      <tr>
+        <td colspan="10">
+          <h5>
+            POR PRODUCTOS DE VENDEDOR # {{ vendedor.seller }} :
+            {{ vendedor.total }}
+          </h5>
+        </td>
+      </tr>
+    </table-body-rows>
   </Table>
-  <hr v-if="total" class="container" />
   <div
     v-if="total"
     class="container d-flex direction-row justify-content-between pr-5"
   >
-    <h3>Total:</h3>
-    <h5>{{ total }}</h5>
+    <h4>TOTAL A PAGAR:</h4>
+    <h5>{{ total }} CLP</h5>
   </div>
+  <button-custom buttonStyle="btn-success" @click="updateCart">
+    Pagar
+  </button-custom>
   <Modal>
     <template v-slot:title>
       <span> Confirma la accion </span>
@@ -44,6 +56,8 @@ import Table from "@/components/Table.vue";
 import TableBodyRows from "@/components/TableBodyRows.vue";
 import TableHeaderRow from "@/components/TableHeaderRow.vue";
 import ButtonCustom from "@/components/ButtonCustom.vue";
+import Form from "@/components/Form.vue";
+
 /* add fontawesome core */
 import { library } from "@fortawesome/fontawesome-svg-core";
 
@@ -56,7 +70,6 @@ const tableRows = ref();
 const cartStore = useCartStore();
 const deleteText = ref("");
 const itemToDelete = ref();
-
 const tableHeaders = ref([
   { value: "producto", title: "producto" },
   { value: "foto", title: "foto" },
@@ -72,19 +85,54 @@ const total = computed(() => {
     return;
   } else {
     tableRows.value.forEach((item) => {
-      total += item.value * item.precio;
+      total += item.total;
     });
     return total;
   }
 });
 
 onBeforeMount(async () => {
-  tableRows.value = cartStore.getCart();
+  ordenCartBySeller();
 });
+
+const ordenCartBySeller = () => {
+  const arrayToOrden = cartStore.getCart();
+  let indexes = [];
+  let uniqueIndexes = [];
+  arrayToOrden.forEach((item) => {
+    indexes.push(item.vendedorid);
+    uniqueIndexes = indexes.filter((element, index) => {
+      return indexes.indexOf(element) === index;
+    });
+    console.log(uniqueIndexes);
+  });
+  let resultArray = [];
+  uniqueIndexes.forEach((index, i) => {
+    let arr = [];
+    arr = arrayToOrden.filter((item) => {
+      return item.vendedorid == index;
+    });
+    resultArray.push({
+      i: i,
+      seller: index,
+      data: arr,
+      total: computed(() => {
+        return tableRows.value[i].data.reduce(
+          (a, b) => a + b.value * b.precio,
+          0
+        );
+      }),
+    });
+  });
+
+  console.log("resultArray");
+  console.log(resultArray);
+  tableRows.value = resultArray;
+};
 
 const updateCart = async () => {
   cartStore.removeItemFromCart(itemToDelete.value.publicacionid);
-  tableRows.value = cartStore.getCart();
+  ordenCartBySeller();
   $("#modal").modal("hide");
 };
 

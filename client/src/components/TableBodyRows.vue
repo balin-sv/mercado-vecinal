@@ -46,6 +46,7 @@
       <span v-if="header.value !== 'foto'">{{ item[header.value] }}</span>
     </td>
   </tr>
+  <slot></slot>
 </template>
 
 <script setup>
@@ -70,7 +71,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["clickHandler"]);
-console.log(props.tableRows);
 
 watch(
   () => props.tableRows,
