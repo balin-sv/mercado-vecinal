@@ -169,28 +169,21 @@ app.post("/new-reserve", async (req, res) => {
     vendedorid,
     publicacionid,
     cantidad,
-    valorTotal,
-    fechaReserva,
+    valortotal,
+    fechareserva,
   } = req.body;
 
-  const file = req.files.foto;
-
-  const img_name = file.name;
-  file.mv("public/images/" + file.name, function (err) {
-    if (err) return res.status(500).send(err);
-  });
   try {
     const client = await pool.connect();
     const result = await client.query(
-      "INSERT into publicaciones (vendedorid, producto, foto,descripcion,stockinicial,stockdisponible,precio) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING publicacionid",
+      "INSERT into publicaciones (compradorid, vendedorid, publicacionid, cantidad, valortotal,fechareserva) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING reservaid",
       [
+        compradorid,
         vendedorid,
-        producto,
-        img_name,
-        descripcion,
-        stockinicial,
-        stockdisponible,
-        precio,
+        publicacionid,
+        cantidad,
+        valortotal,
+        fechareserva,
       ]
     );
     res.send(result.rows);
