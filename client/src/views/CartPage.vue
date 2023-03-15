@@ -27,8 +27,8 @@
     <h4>TOTAL A PAGAR:</h4>
     <h5>{{ total }} CLP</h5>
   </div>
-  <button-custom buttonStyle="btn-success" @click="updateCart">
-    Pagar
+  <button-custom buttonStyle="btn-success" @click="callapi">
+    Reservar productos
   </button-custom>
   <Modal>
     <template v-slot:title>
@@ -50,6 +50,10 @@
 <script setup>
 import { ref, computed } from "vue";
 import { useCartStore } from "@/stores/cart-store.js";
+import { useAuthStore } from "@/stores/auth-store.js";
+import axios from "axios";
+import { useRouter } from "vue-router";
+
 import { onBeforeMount } from "vue";
 import Modal from "@/components/Modal.vue";
 import Table from "@/components/Table.vue";
@@ -68,6 +72,8 @@ library.add(faCircleExclamation);
 
 const tableRows = ref();
 const cartStore = useCartStore();
+const authstore = useAuthStore();
+const router = useRouter();
 const deleteText = ref("");
 const itemToDelete = ref();
 const tableHeaders = ref([
@@ -140,5 +146,34 @@ const openDeleteModal = async (item) => {
   itemToDelete.value = item;
   deleteText.value = "Desea eliminar el producto " + item.producto + "?";
   $("#modal").modal();
+};
+
+const callapi = async () => {
+  const cartToSave = cartStore.getCart();
+  const id = authstore.getUser().userid;
+
+  await cartToSave.forEach(async (order) => {
+    const payload = {
+      compradorid: id,
+      vendedorid: order.vendedorid,
+      publicacionid: order.publicacionid,
+      precio: order.precio,
+      cantidad: order.value,
+      valortotal: order.precio * order.value,
+      fechareserva: new Date(),
+    };
+
+    try {
+      const { data } = await axios.post(
+        `http://localhost:5000/new-reserve`,
+        payload
+      );
+    } catch (e) {
+      console.log(e);
+    }
+  });
+
+  await cartStore.clearCart();
+  router.push("/");
 };
 </script>

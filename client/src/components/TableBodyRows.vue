@@ -39,9 +39,10 @@
       <input
         class="w-50"
         type="number"
-        v-if="header.value == 'cantidad'"
+        v-if="header.value == 'cantidad' && !archiveTable"
         v-model="item.value"
       />
+
       <span v-if="header.value == 'total'">{{ item.value * item.precio }}</span>
       <span v-if="header.value !== 'foto'">{{ item[header.value] }}</span>
     </td>
@@ -71,6 +72,14 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["clickHandler"]);
+
+const archiveTable = computed(() => {
+  if (props.tableRows) {
+    return props.tableRows.find((item) => item.valortotal) ? true : false;
+  } else {
+    return;
+  }
+});
 
 watch(
   () => props.tableRows,

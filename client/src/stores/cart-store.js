@@ -3,8 +3,7 @@ import axios from "axios";
 
 export const useCartStore = defineStore("cart", {
   state: () => ({
-    cart: [{ 1: [] }, { 2: [] }],
-    // cart: [],
+    cart: [],
   }),
 
   getters: {
@@ -32,6 +31,9 @@ export const useCartStore = defineStore("cart", {
     },
     setCartList(list) {
       this.cart = list;
+    },
+    clearCart() {
+      this.cart = [];
     },
   },
   persist: true,

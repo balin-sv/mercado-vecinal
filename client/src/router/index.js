@@ -48,6 +48,22 @@ const router = createRouter({
       },
     },
     {
+      path: "/orders",
+      name: "orders",
+      component: () => import("../views/OrdersPage.vue"),
+      meta: {
+        layout: "TableLayout",
+      },
+    },
+    {
+      path: "/list",
+      name: "list",
+      component: () => import("../views/ListPage.vue"),
+      meta: {
+        layout: "TableLayout",
+      },
+    },
+    {
       path: "/cart",
       name: "cart",
       component: () => import("../views/CartPage.vue"),
