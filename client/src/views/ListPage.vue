@@ -1,5 +1,5 @@
 <template>
-  <h2>Administrar Publicaciones</h2>
+  <h2>Historial de reservas</h2>
   <Table>
     <template v-slot:thead>
       <table-header-row :tableHeaders="tableHeaders"> </table-header-row>
@@ -7,49 +7,17 @@
     <table-body-rows
       :tableRows="tableRows"
       :tableHeaders="tableHeaders"
-      @clickHandler="clickHandler"
     ></table-body-rows>
   </Table>
-  <Modal :context="modalContext">
-    <template v-slot:title>
-      <span>{{
-        modalContext === "edit" ? "Editar publicacion" : "Confirma la accion"
-      }}</span>
-    </template>
-    <Form
-      v-if="modalContext == 'edit'"
-      :formModel="modalFormModel"
-      :context="modalContext"
-      formTitle="Registrarse"
-    />
-    <div v-else>
-      <font-awesome-icon size="2xl" icon="fa-solid fa-circle-exclamation" />
-      <p class="mt-3">{{ deleteText }}</p>
-    </div>
-
-    <template v-slot:btn>
-      <button-custom buttonStyle="btn-success" @click="defineAction">{{
-        modalContext == "delete" ? "Eliminar" : "Guaradr Cambios"
-      }}</button-custom>
-      <button-custom buttonStyle="btn-danger" data-dismiss="modal"
-        >Cancelar</button-custom
-      >
-    </template>
-  </Modal>
 </template>
 
 <script setup>
 import { ref } from "vue";
 import { useAuthStore } from "@/stores/auth-store.js";
 import axios from "axios";
-import { useRouter } from "vue-router";
-
-import Modal from "@/components/Modal.vue";
 import Table from "@/components/Table.vue";
 import TableBodyRows from "@/components/TableBodyRows.vue";
 import TableHeaderRow from "@/components/TableHeaderRow.vue";
-import ButtonCustom from "@/components/ButtonCustom.vue";
-import Form from "@/components/Form.vue";
 /* add fontawesome core */
 import { library } from "@fortawesome/fontawesome-svg-core";
 
@@ -57,7 +25,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 
 library.add(faCircleExclamation);
-const router = useRouter();
+
 const tableRows = ref();
 const authStore = useAuthStore();
 const modalContext = ref(); // modal context
@@ -66,102 +34,15 @@ const itemToDelete = ref();
 const deleteText = ref("");
 
 const tableHeaders = ref([
-  { value: "vendedorid", title: "vendedorID" },
+  { value: "nombre", title: "comprador name" },
   { value: "producto", title: "producto" },
   { value: "foto", title: "foto" },
-  { value: "stockinicial", title: "stockInicial" },
-  { value: "stockdisponible", title: "stockDisponible" },
+  { value: "cantidad", title: "cantidad" },
   { value: "precio", title: "precio" },
-  { value: "acciones", title: "acciones" },
+  { value: "valortotal", title: "valottotal" },
+  { value: "fechareserva", title: "fecha" },
+  { value: "estado", title: "estado" },
 ]);
-
-const updateItemFormModel = ref({
-  producto: {
-    tag: "input",
-    type: "text",
-    placeholder: "Ingrese nombre de producto",
-    name: "producto",
-    label: "Nombre",
-    value: null,
-    rules: {
-      pattern: {
-        value: /.*\S.*/,
-        message: "No puede estar vacío",
-      },
-    },
-    errorMsg: null,
-    isPayload: true,
-  },
-  stockinicial: {
-    tag: "input",
-    type: "number",
-    placeholder: "Ingrese cantidad de producto",
-    name: "stockinicial",
-    label: "Cantidad",
-    value: null,
-    rules: {
-      pattern: {
-        value: /.*\S.*/,
-        message: "No puede estar vacío",
-      },
-    },
-    errorMsg: null,
-    isPayload: true,
-    min: 1,
-    max: 100,
-  },
-  precio: {
-    tag: "input",
-    type: "number",
-    placeholder: "Ingrese cantidad de producto",
-    name: "precio",
-    label: "Precio",
-    value: null,
-    rules: {
-      pattern: {
-        value: /.*\S.*/,
-        message: "No puede estar vacío",
-      },
-    },
-    errorMsg: null,
-    isPayload: true,
-    min: 1,
-    max: 1000000,
-  },
-  foto: {
-    tag: "input",
-    type: "file",
-    placeholder: "Agrega foto de producto",
-    name: "foto",
-    label: "Foto",
-    value: null,
-    rules: {
-      pattern: {
-        value: /([a-zA-Z0-9\s_\\.\-\(\):])+(.jpg|.jpeg|.png)$/i,
-        message:
-          "Debe tener extensión .jpg, .jpeg o .png y no puede pesar mas que 200KB",
-      },
-    },
-    errorMsg: null,
-    isPayload: true,
-  },
-  descripcion: {
-    tag: "textarea",
-    type: null,
-    placeholder: "Descripción del producto",
-    name: "descripcion",
-    label: "Describe su producto",
-    value: null,
-    rules: {
-      pattern: {
-        value: /.*\S.*/,
-        message: "No puede estar vacío",
-      },
-    },
-    errorMsg: null,
-    isPayload: true,
-  },
-});
 
 const clickHandler = (item, context) => {
   console.log(item, context);
@@ -194,16 +75,18 @@ const defineAction = () => {
 
 const getPublications = async () => {
   const id = authStore.getUser().userid;
+  console.log(id);
+  console.log(authStore.getUserToken());
   return new Promise(async (resolve, reject) => {
     axios
       .post(
-        "http://localhost:5000/user-publicaciones",
+        "http://localhost:5000/user-list",
         { id },
         { headers: { authToken: authStore.getUserToken() } }
       )
       .then((res) => {
-        console.log(res);
         setTimeout(async () => {
+          console.log(res.data.data);
           tableRows.value = res.data.data;
           resolve(true);
         }, 2000);
@@ -269,17 +152,12 @@ const deletePublication = async () => {
 const updatePublication = async () => {
   console.log(itemToDelete.value.publicacionid);
   console.log(modalFormModel.value);
-  let payload = {};
+  const payload = {};
   for (const key in modalFormModel.value) {
     modalFormModel.value[key].isPayload
       ? (payload[key] = modalFormModel.value[key].value)
       : null;
   }
-
-  payload = {
-    ...payload,
-    stockdisponible: payload.stockinicial,
-  };
   console.log(payload);
 
   try {

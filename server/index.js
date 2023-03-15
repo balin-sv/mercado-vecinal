@@ -78,6 +78,8 @@ app.get("/publicaciones/:id", async (req, res) => {
 
 app.post("/user-publicaciones", verifyToken, async (req, res) => {
   const { id } = req.body;
+  console.log(id);
+
   const client = await pool.connect();
   const getUsers = {
     text: "select * from publicaciones where vendedorid =$1",
@@ -85,6 +87,64 @@ app.post("/user-publicaciones", verifyToken, async (req, res) => {
   };
   const result = await client.query(getUsers);
 
+  let ojb = {
+    data: result.rows,
+    table_headers: {
+      vendedorID: "vendedorID",
+      producto: "producto",
+      foto: "foto",
+      stockInicial: "stockInicial",
+      stockDisponible: "stockDisponible",
+      precio: "precio",
+      acciones: "acciones",
+    },
+  };
+
+  res.send(ojb);
+
+  client.release(true);
+});
+
+app.post("/user-orders", verifyToken, async (req, res) => {
+  const { id } = req.body;
+  const client = await pool.connect();
+  console.log(id);
+
+  const getOrders = {
+    text: "SELECT usuarios.nombre, publicaciones.producto, publicaciones.foto,publicaciones.precio, reservas.cantidad, reservas.valortotal, reservas.fechareserva FROM reservas JOIN usuarios ON usuarios.userid = reservas.vendedorid JOIN publicaciones ON publicaciones.publicacionid = reservas.publicacionid WHERE reservas.compradorid = $1",
+    values: [id],
+  };
+  const result = await client.query(getOrders);
+  console.log(result.rows);
+  let ojb = {
+    data: result.rows,
+    table_headers: {
+      vendedorID: "vendedorID",
+      producto: "producto",
+      foto: "foto",
+      stockInicial: "stockInicial",
+      stockDisponible: "stockDisponible",
+      precio: "precio",
+      acciones: "acciones",
+    },
+  };
+
+  res.send(ojb);
+
+  client.release(true);
+});
+
+app.post("/user-list", verifyToken, async (req, res) => {
+  const { id } = req.body;
+  const client = await pool.connect();
+  console.log(id);
+
+  const getOrders = {
+    text: "SELECT usuarios.nombre, publicaciones.producto, publicaciones.foto, reservas.precio, reservas.cantidad, reservas.valortotal, reservas.fechareserva FROM reservas JOIN usuarios ON usuarios.userid = reservas.compradorid JOIN publicaciones ON publicaciones.publicacionid = reservas.publicacionid WHERE reservas.vendedorid = $1",
+    values: [id],
+  };
+  const result = await client.query(getOrders);
+  console.log(result.rows);
   let ojb = {
     data: result.rows,
     table_headers: {
@@ -163,6 +223,47 @@ app.post("/new-item", async (req, res) => {
   }
 });
 
+app.post("/new-reserve", async (req, res) => {
+  const {
+    compradorid,
+    vendedorid,
+    publicacionid,
+    precio,
+    cantidad,
+    valortotal,
+    fechareserva,
+  } = req.body;
+
+  console.log(
+    compradorid,
+    vendedorid,
+    publicacionid,
+    cantidad,
+    valortotal,
+    fechareserva
+  );
+
+  try {
+    const client = await pool.connect();
+    const result = await client.query(
+      "INSERT into reservas (compradorid, vendedorid, publicacionid, precio, cantidad, valortotal,fechareserva) VALUES($1, $2, $3, $4, $5, $6 ,$7) RETURNING reservaid",
+      [
+        compradorid,
+        vendedorid,
+        publicacionid,
+        precio,
+        cantidad,
+        valortotal,
+        fechareserva,
+      ]
+    );
+    res.send(result.rows);
+    client.release(true);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 app.post("/new-user", async (req, res) => {
   const { email, nombre, password } = req.body;
   console.log(email, nombre, password);
@@ -214,12 +315,20 @@ app.delete("/delete-publicacion/:id", verifyToken, async (req, res) => {
 
 app.put("/update-publicacion/:id", verifyToken, async (req, res) => {
   const { id } = req.params;
-  const { producto, descripcion, stockinicial, precio } = req.body;
+  const { producto, descripcion, stockinicial, precio, stockdisponible } =
+    req.body;
   try {
     const client = await pool.connect();
     const updateItem = {
-      text: "UPDATE publicaciones SET producto = $2, descripcion = $3, stockinicial = $4, precio = $5 where publicacionid =$1",
-      values: [id, producto, descripcion, stockinicial, precio],
+      text: "UPDATE publicaciones SET producto = $2, descripcion = $3, stockinicial = $4, precio = $5, stockdisponible = $6 where publicacionid =$1",
+      values: [
+        id,
+        producto,
+        descripcion,
+        stockinicial,
+        precio,
+        stockdisponible,
+      ],
     };
     const result = await client.query(updateItem);
     res.send(result.rows);

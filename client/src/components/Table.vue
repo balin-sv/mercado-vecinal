@@ -1,5 +1,5 @@
 <template>
-  <table class="table container mt-5">
+  <table class="table table table-bordered container mt-5">
     <thead>
       <slot name="thead"></slot>
     </thead>
