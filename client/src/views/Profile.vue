@@ -19,7 +19,7 @@ const router = useRouter();
 const authStore = useAuthStore();
 
 const newItemFormModel = ref({
-  producto: {
+  publication_name: {
     tag: "input",
     type: "text",
     placeholder: "Ingrese nombre de producto",
@@ -35,7 +35,7 @@ const newItemFormModel = ref({
     errorMsg: null,
     isPayload: true,
   },
-  stockinicial: {
+  stock_initial: {
     tag: "input",
     type: "number",
     placeholder: "Ingrese cantidad de producto",
@@ -53,7 +53,7 @@ const newItemFormModel = ref({
     min: 1,
     max: 100,
   },
-  precio: {
+  price: {
     tag: "input",
     type: "number",
     placeholder: "Ingrese cantidad de producto",
@@ -71,7 +71,7 @@ const newItemFormModel = ref({
     min: 1,
     max: 1000000,
   },
-  foto: {
+  photo: {
     tag: "input",
     type: "file",
     placeholder: "Agrega foto de producto",
@@ -88,7 +88,7 @@ const newItemFormModel = ref({
     errorMsg: null,
     isPayload: true,
   },
-  descripcion: {
+  description: {
     tag: "textarea",
     type: null,
     placeholder: "Descripción del producto",
@@ -106,14 +106,14 @@ const newItemFormModel = ref({
   },
 });
 const createAccount = async (payload) => {
-  const id = authStore.getUser().userid;
+  const id = authStore.getUser().user_id;
   const token = authStore.getUserToken();
   console.log(token);
 
   const itemPayload = {
     ...payload,
-    vendedorid: id,
-    stockdisponible: payload.stockinicial,
+    seller_id: id,
+    stock_available: payload.stock_initial,
   };
 
   console.log(itemPayload);

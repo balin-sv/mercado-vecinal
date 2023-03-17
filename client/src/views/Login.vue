@@ -55,6 +55,7 @@ const loginFormModel = ref({
 });
 
 const login = async (payload) => {
+  console.log("in login ");
   try {
     authStore.logIn(payload).then(async (res) => {
       if (res) {

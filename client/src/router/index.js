@@ -48,17 +48,17 @@ const router = createRouter({
       },
     },
     {
-      path: "/orders",
-      name: "orders",
-      component: () => import("../views/OrdersPage.vue"),
+      path: "/buy-orders",
+      name: "buy-orders",
+      component: () => import("../views/BuyOrdersPage.vue"),
       meta: {
         layout: "TableLayout",
       },
     },
     {
-      path: "/list",
-      name: "list",
-      component: () => import("../views/ListPage.vue"),
+      path: "/sell-orders",
+      name: "sell-orders",
+      component: () => import("../views/SellOrdersPage.vue"),
       meta: {
         layout: "TableLayout",
       },
