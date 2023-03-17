@@ -40,8 +40,9 @@
 
 <script setup>
 import { ref } from "vue";
-import { useAuthStore } from "@/stores/auth-store.js";
 import axios from "axios";
+
+import { useAuthStore } from "@/stores/auth-store.js";
 import { useRouter } from "vue-router";
 
 import Modal from "@/components/Modal.vue";
@@ -50,37 +51,36 @@ import TableBodyRows from "@/components/TableBodyRows.vue";
 import TableHeaderRow from "@/components/TableHeaderRow.vue";
 import ButtonCustom from "@/components/ButtonCustom.vue";
 import Form from "@/components/Form.vue";
-/* add fontawesome core */
+
 import { library } from "@fortawesome/fontawesome-svg-core";
-
-/* add some free styles */
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
-
 library.add(faCircleExclamation);
+
 const router = useRouter();
-const tableRows = ref();
 const authStore = useAuthStore();
+
+const tableRows = ref();
 const modalContext = ref(); // modal context
 const modalFormModel = ref({});
 const itemToDelete = ref();
 const deleteText = ref("");
 
 const tableHeaders = ref([
-  { value: "vendedorid", title: "vendedorID" },
-  { value: "producto", title: "producto" },
-  { value: "foto", title: "foto" },
-  { value: "stockinicial", title: "stockInicial" },
-  { value: "stockdisponible", title: "stockDisponible" },
-  { value: "precio", title: "precio" },
+  { value: "seller_id", title: "vendedorID" },
+  { value: "publication_name", title: "producto" },
+  { value: "photo", title: "foto" },
+  { value: "stock_initial", title: "stockInicial" },
+  { value: "stock_available", title: "stockDisponible" },
+  { value: "price", title: "precio" },
   { value: "acciones", title: "acciones" },
 ]);
 
 const updateItemFormModel = ref({
-  producto: {
+  publication_name: {
     tag: "input",
     type: "text",
     placeholder: "Ingrese nombre de producto",
-    name: "producto",
+    name: "product-name", //id de input
     label: "Nombre",
     value: null,
     rules: {
@@ -92,11 +92,11 @@ const updateItemFormModel = ref({
     errorMsg: null,
     isPayload: true,
   },
-  stockinicial: {
+  stock_initial: {
     tag: "input",
     type: "number",
     placeholder: "Ingrese cantidad de producto",
-    name: "stockinicial",
+    name: "stock-initial",
     label: "Cantidad",
     value: null,
     rules: {
@@ -110,11 +110,11 @@ const updateItemFormModel = ref({
     min: 1,
     max: 100,
   },
-  precio: {
+  price: {
     tag: "input",
     type: "number",
     placeholder: "Ingrese cantidad de producto",
-    name: "precio",
+    name: "price",
     label: "Precio",
     value: null,
     rules: {
@@ -128,11 +128,11 @@ const updateItemFormModel = ref({
     min: 1,
     max: 1000000,
   },
-  foto: {
+  photo: {
     tag: "input",
     type: "file",
     placeholder: "Agrega foto de producto",
-    name: "foto",
+    name: "photo",
     label: "Foto",
     value: null,
     rules: {
@@ -145,11 +145,11 @@ const updateItemFormModel = ref({
     errorMsg: null,
     isPayload: true,
   },
-  descripcion: {
+  description: {
     tag: "textarea",
     type: null,
     placeholder: "Descripción del producto",
-    name: "descripcion",
+    name: "description",
     label: "Describe su producto",
     value: null,
     rules: {
@@ -164,15 +164,14 @@ const updateItemFormModel = ref({
 });
 
 const clickHandler = (item, context) => {
-  console.log(item, context);
   modalContext.value = context;
   itemToDelete.value = item;
   switch (context) {
     case "edit":
-      openEditModal(item.publicacionid);
+      openEditModal(item.publication_id);
       break;
     case "delete":
-      openDeleteModal(item.producto);
+      openDeleteModal(item.name);
       break;
     default:
       break;
@@ -193,32 +192,29 @@ const defineAction = () => {
 };
 
 const getPublications = async () => {
-  const id = authStore.getUser().userid;
+  const id = authStore.getUser().user_id;
   return new Promise(async (resolve, reject) => {
     axios
       .post(
-        "http://localhost:5000/user-publicaciones",
+        "http://localhost:5000/user-publications",
         { id },
         { headers: { authToken: authStore.getUserToken() } }
       )
       .then((res) => {
-        console.log(res);
         setTimeout(async () => {
-          tableRows.value = res.data.data;
+          tableRows.value = res.data;
           resolve(true);
         }, 2000);
       })
       .catch((err) => {
-        if (err.response.status === 404) {
+        if (err.response && err.response.status === 404) {
           authStore.logOut();
           router.push("/login");
           resolve(true);
         } else {
+          console.log(err);
           reject(err);
         }
-      })
-      .finally(() => {
-        resolve(true);
       });
   });
 };
@@ -230,12 +226,12 @@ const openDeleteModal = async (itemName) => {
 
 const openEditModal = async (id) => {
   try {
-    const res = await axios.get(`http://localhost:5000/publicaciones/${id}`, {
+    const res = await axios.get(`http://localhost:5000/publication/${id}`, {
       headers: { authToken: authStore.getUserToken() },
     });
     if (res.status === 200) {
       for (const key in updateItemFormModel.value) {
-        if (key !== "foto")
+        if (key !== "photo")
           updateItemFormModel.value[key].value = res.data[0][key];
       } // set form values
       modalFormModel.value = updateItemFormModel.value;
@@ -249,10 +245,9 @@ const openEditModal = async (id) => {
 };
 
 const deletePublication = async () => {
-  console.log(itemToDelete.value.publicacionid);
   try {
     const res = await axios.delete(
-      `http://localhost:5000/delete-publicacion/${itemToDelete.value.publicacionid}`,
+      `http://localhost:5000/delete-publication/${itemToDelete.value.publication_id}`,
       { headers: { authToken: authStore.getUserToken() } }
     );
     if (res.status === 200) {
@@ -267,8 +262,7 @@ const deletePublication = async () => {
 };
 
 const updatePublication = async () => {
-  console.log(itemToDelete.value.publicacionid);
-  console.log(modalFormModel.value);
+  console.log("updatePublication");
   let payload = {};
   for (const key in modalFormModel.value) {
     modalFormModel.value[key].isPayload
@@ -278,13 +272,13 @@ const updatePublication = async () => {
 
   payload = {
     ...payload,
-    stockdisponible: payload.stockinicial,
+    stock_available: payload.stock_initial,
   };
   console.log(payload);
 
   try {
     const res = await axios.put(
-      `http://localhost:5000/update-publicacion/${itemToDelete.value.publicacionid}`,
+      `http://localhost:5000/update-publication/${itemToDelete.value.publication_id}`,
       payload,
       { headers: { authToken: authStore.getUserToken() } }
     );

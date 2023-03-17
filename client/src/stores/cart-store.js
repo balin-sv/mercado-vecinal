@@ -26,7 +26,7 @@ export const useCartStore = defineStore("cart", {
       }
     },
     removeItemFromCart(id) {
-      const newCart = this.cart.filter((i) => i.publicacionid !== id);
+      const newCart = this.cart.filter((i) => i.publication_id !== id);
       this.cart = newCart;
     },
     setCartList(list) {
