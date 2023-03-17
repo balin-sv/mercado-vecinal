@@ -34,13 +34,13 @@ const itemToDelete = ref();
 const deleteText = ref("");
 
 const tableHeaders = ref([
-  { value: "nombre", title: "comprador name" },
-  { value: "producto", title: "producto" },
-  { value: "foto", title: "foto" },
-  { value: "cantidad", title: "cantidad" },
-  { value: "precio", title: "precio" },
-  { value: "valortotal", title: "valottotal" },
-  { value: "fechareserva", title: "fecha" },
+  { value: "name", title: "comprador name" },
+  { value: "name", title: "producto" },
+  { value: "photo", title: "foto" },
+  { value: "amount", title: "cantidad" },
+  { value: "price", title: "precio" },
+  { value: "total_price", title: "valottotal" },
+  { value: "reserve_date", title: "fecha" },
   { value: "estado", title: "estado" },
 ]);
 
@@ -74,20 +74,20 @@ const defineAction = () => {
 };
 
 const getPublications = async () => {
-  const id = authStore.getUser().userid;
+  const id = authStore.getUser().user_id;
   console.log(id);
   console.log(authStore.getUserToken());
   return new Promise(async (resolve, reject) => {
     axios
       .post(
-        "http://localhost:5000/user-list",
+        "http://localhost:5000/user-sell-orders",
         { id },
         { headers: { authToken: authStore.getUserToken() } }
       )
       .then((res) => {
         setTimeout(async () => {
-          console.log(res.data.data);
-          tableRows.value = res.data.data;
+          console.log(res.data);
+          tableRows.value = res.data;
           resolve(true);
         }, 2000);
       })
@@ -99,9 +99,6 @@ const getPublications = async () => {
         } else {
           reject(err);
         }
-      })
-      .finally(() => {
-        resolve(true);
       });
   });
 };
@@ -113,7 +110,7 @@ const openDeleteModal = async (itemName) => {
 
 const openEditModal = async (id) => {
   try {
-    const res = await axios.get(`http://localhost:5000/publicaciones/${id}`, {
+    const res = await axios.get(`http://localhost:5000/publication/${id}`, {
       headers: { authToken: authStore.getUserToken() },
     });
     if (res.status === 200) {
@@ -132,10 +129,9 @@ const openEditModal = async (id) => {
 };
 
 const deletePublication = async () => {
-  console.log(itemToDelete.value.publicacionid);
   try {
     const res = await axios.delete(
-      `http://localhost:5000/delete-publicacion/${itemToDelete.value.publicacionid}`,
+      `http://localhost:5000/delete-publication/${itemToDelete.value.publication_id}`,
       { headers: { authToken: authStore.getUserToken() } }
     );
     if (res.status === 200) {
@@ -162,7 +158,7 @@ const updatePublication = async () => {
 
   try {
     const res = await axios.put(
-      `http://localhost:5000/update-publicacion/${itemToDelete.value.publicacionid}`,
+      `http://localhost:5000/update-publication/${itemToDelete.value.publication_id}`,
       payload,
       { headers: { authToken: authStore.getUserToken() } }
     );

@@ -1,14 +1,14 @@
 CREATE DATABASE mercado;
 
-CREATE TABLE usuarios (
-  userID SERIAL PRIMARY KEY,
-  nombre VARCHAR(50) NOT NULL,
+CREATE TABLE users (
+  user_id SERIAL PRIMARY KEY,
+  name VARCHAR(50) NOT NULL,
   email VARCHAR(35) NOT NULL,
   password VARCHAR(35) NOT NULL
 );
 
-INSERT INTO usuarios (
-  nombre,
+INSERT INTO users (
+  name,
   email,
   password
   )
@@ -18,26 +18,26 @@ VALUES
 ;
 
 
-CREATE TABLE publicaciones (
-publicacionID SERIAL PRIMARY KEY, 
-vendedorID INT NOT NULL REFERENCES usuarios (userID),
-producto VARCHAR(35) NOT NULL,
-foto TEXT,
-descripcion VARCHAR(280),
-stockInicial INT,
-stockDisponible INT,
-precio INT NOT NULL
+CREATE TABLE publications (
+ publication_id SERIAL PRIMARY KEY, 
+ seller_id INT NOT NULL REFERENCES users (user_id),
+ publication_name VARCHAR(35) NOT NULL,
+ photo TEXT,
+ description VARCHAR(280),
+ stock_initial INT,
+ stock_available INT,
+ price INT NOT NULL
 );
 
 
-CREATE TABLE reservas (
-  reservaID SERIAL PRIMARY KEY,
-  compradorID INT NOT NULL REFERENCES usuarios (userID),
-  vendedorID INT NOT NULL REFERENCES usuarios (userID),
-  publicacionID INT REFERENCES publicaciones (publicacionID),
-  precio INT NOT NULL,
-  cantidad INT NOT NULL,
-  valorTotal INT NOT NULL,
-  fechaReserva DATE NOT NULL
+CREATE TABLE reservations (
+  reservation_id SERIAL PRIMARY KEY,
+  buyer_id INT NOT NULL REFERENCES users (user_id),
+  seller_id INT NOT NULL REFERENCES users (user_id),
+  publication_id INT REFERENCES publications (publication_id),
+  price INT NOT NULL,
+  amount INT NOT NULL,
+  total_price INT NOT NULL,
+  reserve_date DATE NOT NULL
 );
 

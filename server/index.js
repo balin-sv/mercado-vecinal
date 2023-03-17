@@ -5,10 +5,7 @@ var bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
 var app = express();
 
-// default options
-
 const cors = require("cors");
-
 const port = 5000; //backend routing port
 
 app.use(
@@ -17,10 +14,8 @@ app.use(
   })
 );
 app.use("/public/images", express.static(__dirname + "/public/images"));
-
 app.use(fileUpload());
 app.use(bodyParser.urlencoded({ extended: true }));
-
 app.use(bodyParser.json());
 
 const config = {
@@ -37,138 +32,12 @@ const config = {
 };
 const pool = new Pool(config);
 
-app.get("/publicaciones", async (req, res) => {
-  const client = await pool.connect();
-  const getUsers = {
-    text: "select * from publicaciones",
-    values: [],
-  };
-  const result = await client.query(getUsers);
-
-  let ojb = {
-    data: result.rows,
-    table_headers: {
-      photo: "Foto",
-      name: "Nombre",
-      experience: "Anos de experiencia",
-      specialty: "Especialidad",
-      is_confirmed: "Estado",
-    },
-  };
-
-  res.send(ojb);
-  client.release(true);
-});
-
-app.get("/publicaciones/:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    const client = await pool.connect();
-    const getItem = {
-      text: "select * from publicaciones where publicacionid =$1",
-      values: [id],
-    };
-    const result = await client.query(getItem);
-    res.send(result.rows);
-    client.release(true);
-  } catch (err) {
-    console.log("An error has occurred ", err);
-  }
-});
-
-app.post("/user-publicaciones", verifyToken, async (req, res) => {
-  const { id } = req.body;
-  console.log(id);
-
-  const client = await pool.connect();
-  const getUsers = {
-    text: "select * from publicaciones where vendedorid =$1",
-    values: [id],
-  };
-  const result = await client.query(getUsers);
-
-  let ojb = {
-    data: result.rows,
-    table_headers: {
-      vendedorID: "vendedorID",
-      producto: "producto",
-      foto: "foto",
-      stockInicial: "stockInicial",
-      stockDisponible: "stockDisponible",
-      precio: "precio",
-      acciones: "acciones",
-    },
-  };
-
-  res.send(ojb);
-
-  client.release(true);
-});
-
-app.post("/user-orders", verifyToken, async (req, res) => {
-  const { id } = req.body;
-  const client = await pool.connect();
-  console.log(id);
-
-  const getOrders = {
-    text: "SELECT usuarios.nombre, publicaciones.producto, publicaciones.foto,publicaciones.precio, reservas.cantidad, reservas.valortotal, reservas.fechareserva FROM reservas JOIN usuarios ON usuarios.userid = reservas.vendedorid JOIN publicaciones ON publicaciones.publicacionid = reservas.publicacionid WHERE reservas.compradorid = $1",
-    values: [id],
-  };
-  const result = await client.query(getOrders);
-  console.log(result.rows);
-  let ojb = {
-    data: result.rows,
-    table_headers: {
-      vendedorID: "vendedorID",
-      producto: "producto",
-      foto: "foto",
-      stockInicial: "stockInicial",
-      stockDisponible: "stockDisponible",
-      precio: "precio",
-      acciones: "acciones",
-    },
-  };
-
-  res.send(ojb);
-
-  client.release(true);
-});
-
-app.post("/user-list", verifyToken, async (req, res) => {
-  const { id } = req.body;
-  const client = await pool.connect();
-  console.log(id);
-
-  const getOrders = {
-    text: "SELECT usuarios.nombre, publicaciones.producto, publicaciones.foto, reservas.precio, reservas.cantidad, reservas.valortotal, reservas.fechareserva FROM reservas JOIN usuarios ON usuarios.userid = reservas.compradorid JOIN publicaciones ON publicaciones.publicacionid = reservas.publicacionid WHERE reservas.vendedorid = $1",
-    values: [id],
-  };
-  const result = await client.query(getOrders);
-  console.log(result.rows);
-  let ojb = {
-    data: result.rows,
-    table_headers: {
-      vendedorID: "vendedorID",
-      producto: "producto",
-      foto: "foto",
-      stockInicial: "stockInicial",
-      stockDisponible: "stockDisponible",
-      precio: "precio",
-      acciones: "acciones",
-    },
-  };
-
-  res.send(ojb);
-
-  client.release(true);
-});
-
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
     const client = await pool.connect();
     const checkUser = {
-      text: "select * from usuarios where email =$1 and password =$2",
+      text: "select * from users where email =$1 and password =$2",
       values: [email, password],
     };
     const result = await client.query(checkUser);
@@ -186,14 +55,85 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.get("/publications", async (req, res) => {
+  const client = await pool.connect();
+  const getPublications = {
+    text: "select * from publications",
+    values: [],
+  };
+  const result = await client.query(getPublications);
+  res.send(result.rows);
+  client.release(true);
+});
+
+app.get("/publication/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const client = await pool.connect();
+    const getItem = {
+      text: "select * from publications where publication_id =$1",
+      values: [id],
+    };
+    const result = await client.query(getItem);
+    res.send(result.rows);
+    client.release(true);
+  } catch (err) {
+    console.log("An error has occurred ", err);
+  }
+});
+
+app.post("/user-publications", verifyToken, async (req, res) => {
+  try {
+    const { id } = req.body;
+    const client = await pool.connect();
+    const getPublications = {
+      text: "select * from publications where seller_id =$1",
+      values: [id],
+    };
+    const result = await client.query(getPublications);
+    res.send(result.rows);
+    client.release(true);
+  } catch (err) {
+    console.log("An error has occurred ", err);
+  }
+});
+
+app.post("/user-buy-orders", verifyToken, async (req, res) => {
+  try {
+    const { id } = req.body;
+    const client = await pool.connect();
+    const getOrders = {
+      text: "SELECT users.name, publications.publication_name, publications.photo, publications.price, reservations.amount, reservations.total_price, reservations.reserve_date FROM reservations JOIN users ON users.user_id = reservations.seller_id JOIN publications ON publications.publication_id = reservations.publication_id WHERE reservations.buyer_id = $1",
+      values: [id],
+    };
+    const result = await client.query(getOrders);
+    res.send(result.rows);
+    client.release(true);
+  } catch (err) {
+    console.log("An error has occurred ", err);
+  }
+});
+
+app.post("/user-sell-orders", verifyToken, async (req, res) => {
+  const { id } = req.body;
+  const client = await pool.connect();
+  const getOrders = {
+    text: "SELECT users.name, publications.publication_name, publications.photo, reservations.price, reservations.amount, reservations.total_price, reservations.reserve_date FROM reservations JOIN users ON users.user_id = reservations.buyer_id JOIN publications ON publications.publication_id = reservations.publication_id WHERE reservations.seller_id = $1",
+    values: [id],
+  };
+  const result = await client.query(getOrders);
+  res.send(result.rows);
+  client.release(true);
+});
+
 app.post("/new-item", async (req, res) => {
   const {
-    vendedorid,
-    producto,
-    descripcion,
-    stockinicial,
-    stockdisponible,
-    precio,
+    seller_id,
+    publication_name,
+    description,
+    stock_initial,
+    stock_available,
+    price,
   } = req.body;
 
   const file = req.files.foto;
@@ -205,15 +145,15 @@ app.post("/new-item", async (req, res) => {
   try {
     const client = await pool.connect();
     const result = await client.query(
-      "INSERT into publicaciones (vendedorid, producto, foto,descripcion,stockinicial,stockdisponible,precio) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING publicacionid",
+      "INSERT into publications (seller_id, publication_name, photo, description, stock_initial, stock_available, price) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING publication_id",
       [
-        vendedorid,
-        producto,
+        seller_id,
+        publication_name,
         img_name,
-        descripcion,
-        stockinicial,
-        stockdisponible,
-        precio,
+        description,
+        stock_initial,
+        stock_available,
+        price,
       ]
     );
     res.send(result.rows);
@@ -225,36 +165,26 @@ app.post("/new-item", async (req, res) => {
 
 app.post("/new-reserve", async (req, res) => {
   const {
-    compradorid,
-    vendedorid,
-    publicacionid,
-    precio,
-    cantidad,
-    valortotal,
-    fechareserva,
+    buyer_id,
+    seller_id,
+    publication_id,
+    price,
+    amount,
+    total_price,
+    reserve_date,
   } = req.body;
-
-  console.log(
-    compradorid,
-    vendedorid,
-    publicacionid,
-    cantidad,
-    valortotal,
-    fechareserva
-  );
-
   try {
     const client = await pool.connect();
     const result = await client.query(
-      "INSERT into reservas (compradorid, vendedorid, publicacionid, precio, cantidad, valortotal,fechareserva) VALUES($1, $2, $3, $4, $5, $6 ,$7) RETURNING reservaid",
+      "INSERT into reservations (buyer_id, seller_id, publication_id, price, amount, total_price, reserve_date) VALUES($1, $2, $3, $4, $5, $6 ,$7) RETURNING reservation_id",
       [
-        compradorid,
-        vendedorid,
-        publicacionid,
-        precio,
-        cantidad,
-        valortotal,
-        fechareserva,
+        buyer_id,
+        seller_id,
+        publication_id,
+        price,
+        amount,
+        total_price,
+        reserve_date,
       ]
     );
     res.send(result.rows);
@@ -265,14 +195,13 @@ app.post("/new-reserve", async (req, res) => {
 });
 
 app.post("/new-user", async (req, res) => {
-  const { email, nombre, password } = req.body;
-  console.log(email, nombre, password);
+  const { email, name, password } = req.body;
   try {
     const checkMSG = await checkEmail(email);
     if (checkMSG === "ok") {
       const client = await pool.connect();
       const result = await client.query(
-        "INSERT into usuarios (email, nombre, password) VALUES($1, $2, $3)",
+        "INSERT into users (email, name, password) VALUES($1, $2, $3)",
         [email, nombre, password]
       );
       res.send(result.rows);
@@ -296,13 +225,12 @@ app.put("/logout", verifyToken, function (req, res) {
   });
 });
 
-app.delete("/delete-publicacion/:id", verifyToken, async (req, res) => {
+app.delete("/delete-publication/:id", verifyToken, async (req, res) => {
   const { id } = req.params;
-  console.log(id);
   try {
     const client = await pool.connect();
     const deleteUser = {
-      text: "delete from publicaciones where publicacionid =$1",
+      text: "delete from publications where publication_id =$1",
       values: [id],
     };
     const result = await client.query(deleteUser);
@@ -313,21 +241,26 @@ app.delete("/delete-publicacion/:id", verifyToken, async (req, res) => {
   }
 });
 
-app.put("/update-publicacion/:id", verifyToken, async (req, res) => {
+app.put("/update-publication/:id", verifyToken, async (req, res) => {
   const { id } = req.params;
-  const { producto, descripcion, stockinicial, precio, stockdisponible } =
-    req.body;
+  const {
+    publication_name,
+    description,
+    stock_initial,
+    price,
+    stock_available,
+  } = req.body;
   try {
     const client = await pool.connect();
     const updateItem = {
-      text: "UPDATE publicaciones SET producto = $2, descripcion = $3, stockinicial = $4, precio = $5, stockdisponible = $6 where publicacionid =$1",
+      text: "UPDATE publications SET publication_name = $2, description = $3, stock_initial = $4, price = $5, stock_available = $6 where publication_id =$1",
       values: [
         id,
-        producto,
-        descripcion,
-        stockinicial,
-        precio,
-        stockdisponible,
+        publication_name,
+        description,
+        stock_initial,
+        price,
+        stock_available,
       ],
     };
     const result = await client.query(updateItem);
@@ -339,14 +272,11 @@ app.put("/update-publicacion/:id", verifyToken, async (req, res) => {
 });
 
 function verifyToken(req, res, next) {
-  console.log("verifyToken");
   const token = req.headers["authtoken"];
   if (token == null) return res.sendStatus(403);
-  console.log("token", token);
   jwt.verify(token, "my_token", (err, user) => {
     if (err) return res.sendStatus(404);
     req.user = user;
-    console.log("GOOD");
     next();
   });
 }
@@ -354,7 +284,7 @@ async function checkEmail(email) {
   return new Promise(async (resolve, reject) => {
     const client = await pool.connect();
     const checkEmail = {
-      text: "select 1 from usuarios where email = $1",
+      text: "select 1 from users where email = $1",
       values: [email],
     };
     client

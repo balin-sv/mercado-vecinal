@@ -5,16 +5,16 @@
       <table-header-row :tableHeaders="tableHeaders"> </table-header-row>
     </template>
     <table-body-rows
-      v-for="vendedor in tableRows"
-      :tableRows="vendedor.data"
+      v-for="seller in tableRows"
+      :tableRows="seller.data"
       :tableHeaders="tableHeaders"
       @clickHandler="openDeleteModal"
     >
       <tr>
         <td colspan="10">
           <h5>
-            POR PRODUCTOS DE VENDEDOR # {{ vendedor.seller }} :
-            {{ vendedor.total }}
+            <!-- POR PRODUCTOS DE VENDEDOR # {{ vendedor.seller }} :
+            {{ vendedor.total }} -->
           </h5>
         </td>
       </tr>
@@ -77,11 +77,11 @@ const router = useRouter();
 const deleteText = ref("");
 const itemToDelete = ref();
 const tableHeaders = ref([
-  { value: "producto", title: "producto" },
-  { value: "foto", title: "foto" },
-  { value: "cantidad", title: "cantidad" },
-  { value: "precio", title: "precio" },
-  { value: "total", title: "valor total" },
+  { value: "name", title: "producto" },
+  { value: "photo", title: "foto" },
+  { value: "amount", title: "cantidad" },
+  { value: "price", title: "precio" },
+  { value: "total_price", title: "valor total" },
   { value: "delete", title: "eliminar" },
 ]);
 
@@ -106,17 +106,16 @@ const ordenCartBySeller = () => {
   let indexes = [];
   let uniqueIndexes = [];
   arrayToOrden.forEach((item) => {
-    indexes.push(item.vendedorid);
+    indexes.push(item.seller_id);
     uniqueIndexes = indexes.filter((element, index) => {
       return indexes.indexOf(element) === index;
     });
-    console.log(uniqueIndexes);
   });
   let resultArray = [];
   uniqueIndexes.forEach((index, i) => {
     let arr = [];
     arr = arrayToOrden.filter((item) => {
-      return item.vendedorid == index;
+      return item.seller_id == index;
     });
     resultArray.push({
       i: i,
@@ -124,43 +123,40 @@ const ordenCartBySeller = () => {
       data: arr,
       total: computed(() => {
         return tableRows.value[i].data.reduce(
-          (a, b) => a + b.value * b.precio,
+          (a, b) => a + b.value * b.price,
           0
         );
       }),
     });
   });
-
-  console.log("resultArray");
-  console.log(resultArray);
   tableRows.value = resultArray;
 };
 
 const updateCart = async () => {
-  cartStore.removeItemFromCart(itemToDelete.value.publicacionid);
+  cartStore.removeItemFromCart(itemToDelete.value.publication_id);
   ordenCartBySeller();
   $("#modal").modal("hide");
 };
 
 const openDeleteModal = async (item) => {
   itemToDelete.value = item;
-  deleteText.value = "Desea eliminar el producto " + item.producto + "?";
+  deleteText.value = "Desea eliminar el producto " + item.name + "?";
   $("#modal").modal();
 };
 
 const callapi = async () => {
   const cartToSave = cartStore.getCart();
-  const id = authstore.getUser().userid;
+  const id = authstore.getUser().user_id;
 
   await cartToSave.forEach(async (order) => {
     const payload = {
-      compradorid: id,
-      vendedorid: order.vendedorid,
-      publicacionid: order.publicacionid,
-      precio: order.precio,
-      cantidad: order.value,
-      valortotal: order.precio * order.value,
-      fechareserva: new Date(),
+      buyer_id: id,
+      seller_id: order.seller_id,
+      publication_id: order.publication_id,
+      price: order.price,
+      amount: order.value,
+      total_price: order.price * order.value,
+      reserve_date: new Date(),
     };
 
     try {

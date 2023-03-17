@@ -3,10 +3,10 @@
     <td scope="row">{{ index + 1 }}</td>
     <td v-for="(header, index) in tableHeaders">
       <img
-        v-if="header.value === 'foto'"
+        v-if="header.value === 'photo'"
         :src="
-          item.foto
-            ? `http://localhost:5000/public/images/${item.foto}`
+          item.photo
+            ? `http://localhost:5000/public/images/${item.photo}`
             : `@/assets/img/jabon.jpg`
         "
         style="width: 100%; height: 50px; object-fit: contain"
@@ -39,12 +39,14 @@
       <input
         class="w-50"
         type="number"
-        v-if="header.value == 'cantidad' && !archiveTable"
+        v-if="header.value == 'amount' && !archiveTable"
         v-model="item.value"
       />
 
-      <span v-if="header.value == 'total'">{{ item.value * item.precio }}</span>
-      <span v-if="header.value !== 'foto'">{{ item[header.value] }}</span>
+      <span v-if="header.value == 'total_price'">{{
+        item.value * item.price
+      }}</span>
+      <span v-if="header.value !== 'photo'">{{ item[header.value] }}</span>
     </td>
   </tr>
   <slot></slot>
@@ -75,7 +77,7 @@ const emit = defineEmits(["clickHandler"]);
 
 const archiveTable = computed(() => {
   if (props.tableRows) {
-    return props.tableRows.find((item) => item.valortotal) ? true : false;
+    return props.tableRows.find((item) => item.total_price) ? true : false;
   } else {
     return;
   }
@@ -89,8 +91,8 @@ watch(
       if (element.value === "" || !element.value) {
         element.value = 1;
       } else {
-        element.value > element.stockdisponible
-          ? (element.value = element.stockdisponible)
+        element.value > element.stock_initial
+          ? (element.value = element.stock_available)
           : element.value < 0
           ? (element.value = 1)
           : (element.value = element.value);

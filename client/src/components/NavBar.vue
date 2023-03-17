@@ -55,10 +55,14 @@
           v-if="isAdmin"
           class="nav-item mr-5 text-secondary"
           to="/list"
-          >Mis Pedidos</RouterLink
+          >Mis Ventas</RouterLink
         >
       </ul>
-      <RouterLink class="test" v-if="isAdmin" to="/cart">
+      <RouterLink
+        class="test nav-item mr-5 text-secondary"
+        v-if="isAdmin"
+        to="/cart"
+      >
         <div class="cart">{{ itemsInCart }}</div>
         <font-awesome-icon size="2xl" icon="fa-solid fa-cart-arrow-down" />
       </RouterLink>

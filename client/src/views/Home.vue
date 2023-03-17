@@ -13,8 +13,8 @@
         >
           <img
             :src="
-              item.foto
-                ? `http://localhost:5000/public/images/${item.foto}`
+              item.photo
+                ? `http://localhost:5000/public/images/${item.photo}`
                 : `@/assets/img/jabon.jpg`
             "
             style="width: 100%; height: 200px; object-fit: contain"
@@ -22,15 +22,15 @@
             alt="foto"
           />
           <div class="card-body">
-            <h5 class="card-title">{{ item.producto }}</h5>
+            <h5 class="card-title">{{ item.name }}</h5>
             <p class="card-text">
-              {{ item.descripcion }}
+              {{ item.description }}
             </p>
             <div className="d-flex flex-row justify-content-between ">
               <div className="d-flex flex-nowrap">
                 <button
                   className="btn-count btn btn-secondary"
-                  @click="addItem(item.publicacionid)"
+                  @click="addItem(item.publication_id)"
                 >
                   +
                 </button>
@@ -42,7 +42,7 @@
                 />
                 <button
                   className="btn-count btn btn-secondary"
-                  @click="removeItem(item.publicacionid)"
+                  @click="removeItem(iitem.publication_id)"
                 >
                   -
                 </button>
@@ -51,7 +51,8 @@
                 v-if="item.value > 0"
                 class="btn btn-success ml-2"
                 to="/cart"
-                >Reservar
+              >
+                Reservar
               </RouterLink>
             </div>
           </div>
@@ -62,7 +63,7 @@
 </template>
 <script setup>
 import MainLayout from "@/layouts/MainLayout.vue";
-import { ref, onMounted, computed, watch } from "vue";
+import { ref, computed, watch } from "vue";
 import { useCartStore } from "@/stores/cart-store.js";
 import axios from "axios";
 
@@ -85,10 +86,8 @@ const list = computed(() => {
 });
 
 const addItem = (id) => {
-  console.log(id);
-  console.log(list.value);
-  const item = itemsList.value.find((item) => item.publicacionid === id);
-  if (item.value < item.stockdisponible) {
+  const item = itemsList.value.find((item) => item.publication_id === id);
+  if (item.value < item.stock_available) {
     item.value++;
   } else if (!item.value) {
     item.value = 1;
@@ -96,8 +95,7 @@ const addItem = (id) => {
 };
 
 const removeItem = (id) => {
-  console.log(id);
-  const item = itemsList.value.find((item) => item.publicacionid === id);
+  const item = itemsList.value.find((item) => item.publication_id === id);
   if (item.value > 0) {
     item.value--;
   } else if (!item.value) {
@@ -120,8 +118,8 @@ watch(
 
         const num = parseInt(checked);
 
-        num > element.stockdisponible
-          ? (element.value = element.stockdisponible)
+        num > element.stock_available
+          ? (element.value = element.stock_available)
           : num < 0
           ? (element.value = 0)
           : (element.value = num);
@@ -131,14 +129,14 @@ watch(
   { deep: true }
 );
 
-console.log(props.isAdmin);
 const getItems = async () => {
   return new Promise(async (resolve, reject) => {
     axios
-      .get("http://localhost:5000/publicaciones")
+      .get("http://localhost:5000/publications")
       .then((res) => {
+        console.log(res.data);
         setTimeout(async () => {
-          const modifData = res.data.data.map((obj) => {
+          const modifData = res.data.map((obj) => {
             return { ...obj, value: 0 };
           });
           itemsList.value = modifData;

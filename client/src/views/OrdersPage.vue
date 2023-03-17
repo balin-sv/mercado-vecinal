@@ -35,12 +35,12 @@ const deleteText = ref("");
 
 const tableHeaders = ref([
   { value: "nombre", title: "vendedor name" },
-  { value: "producto", title: "producto" },
-  { value: "foto", title: "foto" },
-  { value: "cantidad", title: "cantidad" },
-  { value: "precio", title: "precio" },
-  { value: "valortotal", title: "valottotal" },
-  { value: "fechareserva", title: "fecha" },
+  { value: "name", title: "producto" },
+  { value: "photo", title: "foto" },
+  { value: "amount", title: "cantidad" },
+  { value: "price", title: "precio" },
+  { value: "total_price", title: "valottotal" },
+  { value: "reserve_date", title: "fecha" },
   { value: "estado", title: "estado" },
 ]);
 
@@ -50,10 +50,10 @@ const clickHandler = (item, context) => {
   itemToDelete.value = item;
   switch (context) {
     case "edit":
-      openEditModal(item.publicacionid);
+      openEditModal(item.publication_id);
       break;
     case "delete":
-      openDeleteModal(item.producto);
+      openDeleteModal(item.name);
       break;
     default:
       break;
@@ -74,20 +74,19 @@ const defineAction = () => {
 };
 
 const getPublications = async () => {
-  const id = authStore.getUser().userid;
+  const id = authStore.getUser().user_id;
   console.log(id);
   console.log(authStore.getUserToken());
   return new Promise(async (resolve, reject) => {
     axios
       .post(
-        "http://localhost:5000/user-orders",
+        "http://localhost:5000/user-buy-orders",
         { id },
         { headers: { authToken: authStore.getUserToken() } }
       )
       .then((res) => {
         setTimeout(async () => {
-          console.log(res.data.data);
-          tableRows.value = res.data.data;
+          tableRows.value = res.data;
           resolve(true);
         }, 2000);
       })
