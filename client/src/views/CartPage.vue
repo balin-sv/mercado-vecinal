@@ -13,8 +13,8 @@
       <tr>
         <td colspan="10">
           <h5>
-            <!-- POR PRODUCTOS DE VENDEDOR # {{ vendedor.seller }} :
-            {{ vendedor.total }} -->
+            POR PRODUCTOS DE VENDEDOR # {{ seller.seller }} :
+            {{ seller.total }}
           </h5>
         </td>
       </tr>
@@ -37,10 +37,10 @@
     <p>{{ deleteText }}</p>
     <font-awesome-icon size="2xl" icon="fa-solid fa-circle-exclamation" />
     <template v-slot:btn>
-      <button-custom buttonStyle="btn-success" @click="updateCart">
+      <button-custom buttonStyle="btn-danger" @click="updateCart">
         Eliminar
       </button-custom>
-      <button-custom buttonStyle="btn-danger" data-dismiss="modal"
+      <button-custom buttonStyle="btn-success" data-dismiss="modal"
         >Cancelar</button-custom
       >
     </template>
@@ -77,7 +77,7 @@ const router = useRouter();
 const deleteText = ref("");
 const itemToDelete = ref();
 const tableHeaders = ref([
-  { value: "name", title: "producto" },
+  { value: "publication_name", title: "producto" },
   { value: "photo", title: "foto" },
   { value: "amount", title: "cantidad" },
   { value: "price", title: "precio" },
@@ -140,7 +140,7 @@ const updateCart = async () => {
 
 const openDeleteModal = async (item) => {
   itemToDelete.value = item;
-  deleteText.value = "Desea eliminar el producto " + item.name + "?";
+  deleteText.value = "Desea eliminar " + item.publication_name + "?";
   $("#modal").modal();
 };
 
@@ -158,7 +158,6 @@ const callapi = async () => {
       total_price: order.price * order.value,
       reserve_date: new Date(),
     };
-
     try {
       const { data } = await axios.post(
         `http://localhost:5000/new-reserve`,

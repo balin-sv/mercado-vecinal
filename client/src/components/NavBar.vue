@@ -48,13 +48,13 @@
         <RouterLink
           v-if="isAdmin"
           class="nav-item mr-5 text-secondary"
-          to="/orders"
+          to="/buy-orders"
           >Mis Compras</RouterLink
         >
         <RouterLink
           v-if="isAdmin"
           class="nav-item mr-5 text-secondary"
-          to="/list"
+          to="/sell-orders"
           >Mis Ventas</RouterLink
         >
       </ul>

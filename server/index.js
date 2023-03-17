@@ -103,7 +103,7 @@ app.post("/user-buy-orders", verifyToken, async (req, res) => {
     const { id } = req.body;
     const client = await pool.connect();
     const getOrders = {
-      text: "SELECT users.name, publications.publication_name, publications.photo, publications.price, reservations.amount, reservations.total_price, reservations.reserve_date FROM reservations JOIN users ON users.user_id = reservations.seller_id JOIN publications ON publications.publication_id = reservations.publication_id WHERE reservations.buyer_id = $1",
+      text: "SELECT users.name, publications.publication_name, publications.photo, reservations.price, reservations.amount, reservations.total_price, reservations.reserve_date FROM reservations JOIN users ON users.user_id = reservations.seller_id JOIN publications ON publications.publication_id = reservations.publication_id WHERE reservations.buyer_id = $1",
       values: [id],
     };
     const result = await client.query(getOrders);
@@ -191,6 +191,7 @@ app.post("/new-reserve", async (req, res) => {
     client.release(true);
   } catch (error) {
     console.log(error);
+    res.sendStatus(500);
   }
 });
 

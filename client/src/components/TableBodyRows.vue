@@ -42,11 +42,17 @@
         v-if="header.value == 'amount' && !archiveTable"
         v-model="item.value"
       />
+      <span v-if="header.value == 'reserve_date'">{{
+        item[header.value].split("T")[0]
+      }}</span>
 
-      <span v-if="header.value == 'total_price'">{{
+      <span v-if="header.value == 'total_price' && !archiveTable">{{
         item.value * item.price
       }}</span>
-      <span v-if="header.value !== 'photo'">{{ item[header.value] }}</span>
+      <span
+        v-if="header.value !== 'photo' && header.value !== 'reserve_date'"
+        >{{ item[header.value] }}</span
+      >
     </td>
   </tr>
   <slot></slot>
