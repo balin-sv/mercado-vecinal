@@ -58,7 +58,7 @@ app.post("/login", async (req, res) => {
 app.get("/publications", async (req, res) => {
   const client = await pool.connect();
   const getPublications = {
-    text: "select * from publications",
+    text: "select publications.*, users.name from publications inner join users on publications.seller_id = users.user_id",
     values: [],
   };
   const result = await client.query(getPublications);

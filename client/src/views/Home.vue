@@ -19,10 +19,24 @@
           alt="foto"
         />
         <div class="card-body">
-          <h5 class="card-title">{{ item.name }}</h5>
-          <p class="card-text">
-            {{ item.description }}
-          </p>
+          <h5 class="card-text">
+            <span class="font-weight-bold">Vendedor</span>: {{ item.name }}
+          </h5>
+          <h6 class="card-title">
+            <span class="font-weight-bold">Producto</span>:
+            {{ item.publication_name }}
+          </h6>
+          <h6 class="card-title">
+            <span class="font-weight-bold">Stock</span>:
+            {{
+              item.stock_available
+                ? item.stock_available - item.value
+                : item.stock_available
+            }}
+          </h6>
+          <h6 class="card-title">
+            <span class="font-weight-bold">Precio</span>: {{ item.price }} CLP
+          </h6>
           <div className="d-flex flex-row justify-content-between ">
             <div className="d-flex flex-nowrap">
               <button
@@ -70,11 +84,31 @@
     <template v-slot:title>
       <span>{{ "Detalles de producto" }}</span>
     </template>
-
     <div>
-      <p class="mt-3">{{ itemDetailes }}</p>
-    </div>
+      <img
+        :src="
+          itemDetailes.photo
+            ? `http://localhost:5000/public/images/${itemDetailes.photo}`
+            : ``
+        "
+        style="width: 100%; height: 200px; object-fit: contain"
+        class="card-img-top"
+        alt="foto"
+      />
 
+      <h6 class="card-title mt-5">
+        <span class="font-weight-bold">Producto</span>:
+        {{ itemDetailes.publication_name }}
+      </h6>
+      <h6 class="card-title">
+        <span class="font-weight-bold">Precio</span>:
+        {{ itemDetailes.price }} CLP
+      </h6>
+      <h6 class="card-title">
+        <span class="font-weight-bold">Detalle</span>:
+        {{ itemDetailes.description }}
+      </h6>
+    </div>
     <template v-slot:btn> </template>
   </Modal>
 </template>
