@@ -19,10 +19,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 const config = {
-  user: "postgres",
-  host: "localhost",
-  database: "mercado",
-  password: "180483",
+  user: "svet",
+  host: "postgres://svet:0hOcKU2DBcOccJnN5xl75aNMHgW6fKac@dpg-cgc7dnm4dad7acc07dog-a",
+  database: "mercado_74rj",
+  password: "0hOcKU2DBcOccJnN5xl75aNMHgW6fKac",
   max: 20,
   idleTimeoutMillis: 5000,
   connectionTimeoutMillis: 2000,
