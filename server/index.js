@@ -36,6 +36,17 @@ app.get("/", async (req, res) => {
   res.send("Hello World!");
 });
 
+app.get("/users", async (req, res) => {
+  const client = await pool.connect();
+  const getUsers = {
+    text: "select * from users",
+    values: [],
+  };
+  const result = await client.query(getUsers);
+  res.send(result.rows);
+  client.release(true);
+});
+
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
