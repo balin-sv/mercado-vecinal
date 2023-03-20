@@ -32,6 +32,10 @@ const config = {
 };
 const pool = new Pool(config);
 
+app.get("/", async (req, res) => {
+  res.send("Hello World!");
+});
+
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
