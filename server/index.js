@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 
 const config = {
   user: "svet",
-  host: " postgres://svet:0hOcKU2DBcOccJnN5xl75aNMHgW6fKac@dpg-cgc7dnm4dad7acc07dog-a/mercado_74rj",
+  host: "dpg-cgc7dnm4dad7acc07dog-a",
   database: "mercado_74rj",
   password: "0hOcKU2DBcOccJnN5xl75aNMHgW6fKac",
   max: 20,
