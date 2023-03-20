@@ -46,12 +46,12 @@
         item[header.value].split("T")[0]
       }}</span>
 
-      <span v-if="header.value == 'total_price' && !archiveTable">{{
-        item.value * item.price
-      }}</span>
-      <span
-        v-if="header.value !== 'photo' && header.value !== 'reserve_date'"
-        >{{ item[header.value] }}</span
+      <span v-if="header.value == 'total_price' && !archiveTable"
+        >{{ item.value * item.price }} CLP</span
+      >
+      <span v-if="header.value !== 'photo' && header.value !== 'reserve_date'"
+        >{{ item[header.value] }}
+        {{ header.value == "price" ? "CLP" : "" }}</span
       >
     </td>
   </tr>

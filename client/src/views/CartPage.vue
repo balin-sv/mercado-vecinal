@@ -14,7 +14,7 @@
         <td colspan="10">
           <h5>
             POR PRODUCTOS DE VENDEDOR # {{ seller.seller }} :
-            {{ seller.total }}
+            {{ seller.total }} CLP
           </h5>
         </td>
       </tr>
