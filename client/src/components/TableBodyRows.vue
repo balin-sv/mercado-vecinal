@@ -6,7 +6,7 @@
         v-if="header.value === 'photo'"
         :src="
           item.photo
-            ? `http://localhost:5000/public/images/${item.photo}`
+            ? `https://mercado-api-m4ay.onrender.com/public/images/${item.photo}`
             : `@/assets/img/jabon.jpg`
         "
         style="width: 100%; height: 50px; object-fit: contain"

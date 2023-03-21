@@ -196,7 +196,7 @@ const getPublications = async () => {
   return new Promise(async (resolve, reject) => {
     axios
       .post(
-        "http://localhost:5000/user-publications",
+        "https://mercado-api-m4ay.onrender.com/user-publications",
         { id },
         { headers: { authToken: authStore.getUserToken() } }
       )
@@ -226,7 +226,7 @@ const openDeleteModal = async (itemName) => {
 
 const openEditModal = async (id) => {
   try {
-    const res = await axios.get(`http://localhost:5000/publication/${id}`, {
+    const res = await axios.get(`https://mercado-api-m4ay.onrender.com/publication/${id}`, {
       headers: { authToken: authStore.getUserToken() },
     });
     if (res.status === 200) {
@@ -247,7 +247,7 @@ const openEditModal = async (id) => {
 const deletePublication = async () => {
   try {
     const res = await axios.delete(
-      `http://localhost:5000/delete-publication/${itemToDelete.value.publication_id}`,
+      `https://mercado-api-m4ay.onrender.com/delete-publication/${itemToDelete.value.publication_id}`,
       { headers: { authToken: authStore.getUserToken() } }
     );
     if (res.status === 200) {

@@ -11,7 +11,7 @@
         <img
           :src="
             item.photo
-              ? `http://localhost:5000/public/images/${item.photo}`
+              ? `https://mercado-api-m4ay.onrender.com/public/images/${item.photo}`
               : `@/assets/img/jabon.jpg`
           "
           style="width: 100%; height: 200px; object-fit: contain"
@@ -88,7 +88,7 @@
       <img
         :src="
           itemDetailes.photo
-            ? `http://localhost:5000/public/images/${itemDetailes.photo}`
+            ? `https://mercado-api-m4ay.onrender.com/public/images/${itemDetailes.photo}`
             : ``
         "
         style="width: 100%; height: 200px; object-fit: contain"
@@ -206,9 +206,12 @@ const getItems = async () => {
 
 const openDetailModal = async (id) => {
   try {
-    const res = await axios.get(`https://mercado-api-m4ay.onrender.com/publication/${id}`, {
-      headers: { authToken: authStore.getUserToken() },
-    });
+    const res = await axios.get(
+      `https://mercado-api-m4ay.onrender.com/publication/${id}`,
+      {
+        headers: { authToken: authStore.getUserToken() },
+      }
+    );
     if (res.status === 200) {
       console.log(res.data[0]);
       itemDetailes.value = res.data[0];
