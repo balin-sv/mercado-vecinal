@@ -18,7 +18,6 @@ export const useCartStore = defineStore("cart", {
   actions: {
     addItemToCart(item) {
       // this.cart.push(item);
-      console.log("dfasdfadf");
       if (this.cart.length > 0) {
         this.cart.forEach((obj) => {
           console.log(Object.keys(obj));

@@ -20,7 +20,7 @@ export const useAuthStore = defineStore("auth", {
     logIn(payload) {
       return new Promise((resolve, reject) => {
         axios
-          .post("http://localhost:5000/login", payload)
+          .post("https://mercado-api-m4ay.onrender.com/login", payload)
           .then((result) => {
             if (result) {
               console.log(result.data);

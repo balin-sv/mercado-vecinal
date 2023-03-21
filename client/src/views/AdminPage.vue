@@ -278,7 +278,7 @@ const updatePublication = async () => {
 
   try {
     const res = await axios.put(
-      `http://localhost:5000/update-publication/${itemToDelete.value.publication_id}`,
+      `https://mercado-api-m4ay.onrender.com/update-publication/${itemToDelete.value.publication_id}`,
       payload,
       { headers: { authToken: authStore.getUserToken() } }
     );

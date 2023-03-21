@@ -187,7 +187,7 @@ watch(
 const getItems = async () => {
   return new Promise(async (resolve, reject) => {
     axios
-      .get("http://localhost:5000/publications")
+      .get("https://mercado-api-m4ay.onrender.com/publications")
       .then((res) => {
         console.log(res.data);
         setTimeout(async () => {
@@ -206,7 +206,7 @@ const getItems = async () => {
 
 const openDetailModal = async (id) => {
   try {
-    const res = await axios.get(`http://localhost:5000/publication/${id}`, {
+    const res = await axios.get(`https://mercado-api-m4ay.onrender.com/publication/${id}`, {
       headers: { authToken: authStore.getUserToken() },
     });
     if (res.status === 200) {

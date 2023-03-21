@@ -51,7 +51,7 @@ const getPublications = async () => {
   return new Promise(async (resolve, reject) => {
     axios
       .post(
-        "http://localhost:5000/user-buy-orders",
+        "https://mercado-api-m4ay.onrender.com/user-buy-orders",
         { id },
         { headers: { authToken: authStore.getUserToken() } }
       )

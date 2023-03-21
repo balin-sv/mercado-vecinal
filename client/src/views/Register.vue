@@ -83,7 +83,7 @@ const registerFormModel = ref({
 const createAccount = async (payload) => {
   try {
     const { data } = await axios.post(
-      `http://localhost:5000/new-user`,
+      `https://mercado-api-m4ay.onrender.com/new-user`,
       payload
     );
     const loginPayload = {

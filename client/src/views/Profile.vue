@@ -119,7 +119,7 @@ const createAccount = async (payload) => {
   console.log(itemPayload);
   try {
     const { data } = await axios.post(
-      `http://localhost:5000/new-item`,
+      `https://mercado-api-m4ay.onrender.com/new-item`,
 
       itemPayload,
       {

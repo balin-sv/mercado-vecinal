@@ -21,7 +21,7 @@ export const useUsersStore = defineStore("users", {
     async getUsers() {
       return new Promise((resolve, reject) => {
         axios
-          .get("http://localhost:5000/users")
+          .get("https://mercado-api-m4ay.onrender.com/users")
           .then((res) => {
             this.users = res.data;
             console.log(this.users);
