@@ -71,14 +71,18 @@ app.post("/login", async (req, res) => {
 });
 
 app.get("/publications", async (req, res) => {
-  const client = await pool.connect();
-  const getPublications = {
-    text: "select publications.*, users.name from publications inner join users on publications.seller_id = users.user_id",
-    values: [],
-  };
-  const result = await client.query(getPublications);
-  res.send(result.rows);
-  client.release(true);
+  try {
+    const client = await pool.connect();
+    const getPublications = {
+      text: "select publications.*, users.name from publications inner join users on publications.seller_id = users.user_id",
+      values: [],
+    };
+    const result = await client.query(getPublications);
+    res.send(result.rows);
+    client.release(true);
+  } catch (error) {
+    console.log("An error has occurred ", err);
+  }
 });
 
 app.get("/publication/:id", async (req, res) => {
@@ -130,15 +134,19 @@ app.post("/user-buy-orders", verifyToken, async (req, res) => {
 });
 
 app.post("/user-sell-orders", verifyToken, async (req, res) => {
-  const { id } = req.body;
-  const client = await pool.connect();
-  const getOrders = {
-    text: "SELECT users.name, publications.publication_name, publications.photo, reservations.price, reservations.amount, reservations.total_price, reservations.reserve_date FROM reservations JOIN users ON users.user_id = reservations.buyer_id JOIN publications ON publications.publication_id = reservations.publication_id WHERE reservations.seller_id = $1",
-    values: [id],
-  };
-  const result = await client.query(getOrders);
-  res.send(result.rows);
-  client.release(true);
+  try {
+    const { id } = req.body;
+    const client = await pool.connect();
+    const getOrders = {
+      text: "SELECT users.name, publications.publication_name, publications.photo, reservations.price, reservations.amount, reservations.total_price, reservations.reserve_date FROM reservations JOIN users ON users.user_id = reservations.buyer_id JOIN publications ON publications.publication_id = reservations.publication_id WHERE reservations.seller_id = $1",
+      values: [id],
+    };
+    const result = await client.query(getOrders);
+    res.send(result.rows);
+    client.release(true);
+  } catch (error) {
+    console.log("An error has occurred ", err);
+  }
 });
 
 app.post("/new-item", async (req, res) => {
