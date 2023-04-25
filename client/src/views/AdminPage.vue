@@ -171,7 +171,7 @@ const clickHandler = (item, context) => {
       openEditModal(item.publication_id);
       break;
     case "delete":
-      openDeleteModal(item.name);
+      openDeleteModal(item.ublication_name);
       break;
     default:
       break;
@@ -226,9 +226,12 @@ const openDeleteModal = async (itemName) => {
 
 const openEditModal = async (id) => {
   try {
-    const res = await axios.get(`https://mercado-api-m4ay.onrender.com/publication/${id}`, {
-      headers: { authToken: authStore.getUserToken() },
-    });
+    const res = await axios.get(
+      `https://mercado-api-m4ay.onrender.com/publication/${id}`,
+      {
+        headers: { authToken: authStore.getUserToken() },
+      }
+    );
     if (res.status === 200) {
       for (const key in updateItemFormModel.value) {
         if (key !== "photo")
