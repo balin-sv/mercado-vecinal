@@ -3,16 +3,20 @@ const jwt = require("jsonwebtoken");
 const { Pool } = require("pg");
 var bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
+const cors = require("cors");
 var app = express();
 
-const cors = require("cors");
+// Allow cross-origin requests from any domain
+app.use(cors());
+
+// Middleware function that logs incoming requests
+app.use((req, res, next) => {
+  console.log(`Received ${req.method} request for ${req.url}`);
+  next();
+});
+
 const port = process.env.port || 5000; //backend routing port
 
-app.use(
-  cors({
-    origin: "*",
-  })
-);
 app.use("/public/images", express.static(__dirname + "/public/images"));
 app.use(fileUpload());
 app.use(bodyParser.urlencoded({ extended: true }));
